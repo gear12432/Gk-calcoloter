@@ -401,47 +401,47 @@ export default function CitizenCalculatorScreen({
       {/* Main Content: Full-Screen Fixed Non-Scrolling Keyboard Background (#15191D) */}
       {mode === 'CITIZEN' ? (
         <main className="flex-1 w-full bg-[#15191D] flex flex-col justify-between p-1.5 gap-1.5 overflow-hidden min-h-0">
-          {/* Large Rectangular Green Citizen LCD Display - Flush with Keypad */}
-          <div className="shrink-0 bg-[#A6B991] text-[#101010] rounded-xl px-3.5 py-2.5 shadow-inner border-2 border-[#8d9f78] flex flex-col justify-between min-h-[116px] sm:min-h-[132px]">
-            <div className="flex items-center justify-between text-[11px] font-mono font-bold text-[#101010]/80 border-b border-[#101010]/15 pb-1">
+          {/* Large Rectangular Green Citizen LCD Display - Taller Box & Larger Font Size */}
+          <div className="shrink-0 bg-[#A6B991] text-[#101010] rounded-xl px-4 py-3 shadow-inner border-2 border-[#8d9f78] flex flex-col justify-between h-[25dvh] min-h-[158px] max-h-[210px]">
+            <div className="flex items-center justify-between text-xs sm:text-sm font-mono font-bold text-[#101010]/85 border-b border-[#101010]/20 pb-1.5">
               <div className="flex items-center gap-2">
                 <span>CT-512N CITIZEN</span>
                 {memoryValue !== 0 && (
-                  <span className="px-1.5 py-0.2 bg-[#101010] text-[#A6B991] rounded-xs">
+                  <span className="px-1.5 py-0.5 bg-[#101010] text-[#A6B991] rounded-xs">
                     M: {formatNumber(memoryValue, settings.numberFormat)}
                   </span>
                 )}
-                {grandTotal !== 0 && (
-                  <span className="px-1.5 py-0.2 bg-[#101010]/80 text-[#A6B991] rounded-xs">
-                    GT: {formatNumber(grandTotal, settings.numberFormat)}
-                  </span>
-                )}
+                <span className="px-1.5 py-0.5 bg-[#101010]/15 text-[#101010] rounded-xs">
+                  GT: {formatNumber(grandTotal, settings.numberFormat)}
+                </span>
               </div>
-              <span className="truncate max-w-[220px]">{expression}</span>
+              <span className="truncate max-w-[220px] text-sm sm:text-base font-extrabold text-[#101010]">
+                {expression}
+              </span>
             </div>
 
-            <div className="my-1 text-right overflow-hidden">
-              <div className="font-mono font-extrabold text-4xl sm:text-5xl text-[#101010] tracking-tight tabular-nums leading-none truncate">
+            <div className="my-auto py-1 text-right overflow-hidden">
+              <div className="font-mono font-extrabold text-5xl sm:text-6xl text-[#101010] tracking-tight tabular-nums leading-none truncate">
                 {formattedDisplay}
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] font-mono text-[#101010]/75 border-t border-[#101010]/15 pt-1">
+            <div className="flex items-center justify-between text-xs sm:text-sm font-mono font-semibold text-[#101010]/80 border-t border-[#101010]/20 pt-1.5">
               <span className="truncate">
                 {settings.numberFormat === 'INDIA'
                   ? numberToIndianWords(numericDisplay)
                   : numberToWesternWords(numericDisplay)}
               </span>
-              <span className="shrink-0 ml-2">
+              <span className="shrink-0 ml-2 font-bold">
                 STEPS: {String(stepsList.length).padStart(2, '0')}
               </span>
             </div>
           </div>
 
-          {/* Citizen 6-Row Professional Keypad - Stretches edge-to-edge to fill remaining height with zero scroll */}
+          {/* Citizen 6-Row Professional Keypad - Compact 3-button row + 5 flex-1 rows */}
           <div className="flex-1 flex flex-col gap-1.5 min-h-0">
-            {/* First utility row: CHECK | CORRECT / DELETE | CLEAR */}
-            <div className="flex-1 grid grid-cols-3 gap-1.5 min-h-0">
+            {/* First utility row: CHECK | CORRECT / DELETE | CLEAR (Compact height as requested) */}
+            <div className="h-10 sm:h-11 shrink-0 grid grid-cols-3 gap-1.5">
               <button
                 type="button"
                 onClick={() => {
@@ -451,23 +451,23 @@ export default function CitizenCalculatorScreen({
                     setIsCheckOpen(true);
                   }
                 }}
-                className="h-full w-full rounded-xl bg-[#347BCB] hover:bg-[#2b69b0] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#1b4677] flex items-center justify-center gap-1.5 transition-all"
+                className="h-full w-full rounded-xl bg-[#347BCB] hover:bg-[#2b69b0] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_2px_0_#1b4677] flex items-center justify-center gap-1.5 transition-all"
               >
-                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                 <span>CHECK</span>
               </button>
               <button
                 type="button"
                 onClick={handleCorrectDelete}
-                className="h-full w-full rounded-xl bg-[#548DD7] hover:bg-[#427bc4] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#2b5791] flex items-center justify-center gap-1.5 transition-all"
+                className="h-full w-full rounded-xl bg-[#548DD7] hover:bg-[#427bc4] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_2px_0_#2b5791] flex items-center justify-center gap-1 transition-all"
               >
-                <Delete className="w-4 h-4 shrink-0" />
+                <Delete className="w-3.5 h-3.5 shrink-0" />
                 <span>CORRECT / DELETE</span>
               </button>
               <button
                 type="button"
                 onClick={handleClearAll}
-                className="h-full w-full rounded-xl bg-[#D83B29] hover:bg-[#c03221] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#801e13] flex items-center justify-center transition-all"
+                className="h-full w-full rounded-xl bg-[#D83B29] hover:bg-[#c03221] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_2px_0_#801e13] flex items-center justify-center transition-all"
               >
                 CLEAR
               </button>

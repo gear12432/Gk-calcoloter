@@ -51,21 +51,21 @@
     .key-blue {
       background-color: #347BCB;
       color: #FFFFFF;
-      box-shadow: 0 3px 0 #1b4677;
+      box-shadow: 0 2px 0 #1b4677;
     }
-    .key-blue:active { transform: translateY(2px); box-shadow: 0 1px 0 #1b4677; }
+    .key-blue:active { transform: translateY(1.5px); box-shadow: 0 1px 0 #1b4677; }
     .key-blue-sec {
       background-color: #548DD7;
       color: #FFFFFF;
-      box-shadow: 0 3px 0 #2b5791;
+      box-shadow: 0 2px 0 #2b5791;
     }
-    .key-blue-sec:active { transform: translateY(2px); }
+    .key-blue-sec:active { transform: translateY(1.5px); }
     .key-red {
       background-color: #D83B29;
       color: #FFFFFF;
-      box-shadow: 0 3px 0 #801e13;
+      box-shadow: 0 2px 0 #801e13;
     }
-    .key-red:active { transform: translateY(2px); }
+    .key-red:active { transform: translateY(1.5px); }
     .key-equal {
       background-color: #E3452E;
       color: #FFFFFF;
@@ -106,7 +106,6 @@
       const HISTORY_KEY = 'all_in_one_calc_history_v1';
       const SETTINGS_KEY = 'all_in_one_calc_settings_v1';
 
-      // Default screen is 'citizen' (Citizen Calculator) as requested
       const state = {
         screen: 'citizen',
         prevScreen: 'citizen',
@@ -174,6 +173,9 @@
         cashQty: { 500: '10', 200: '5', 100: '10', 50: '', 20: '', 10: '', 5: '', 2: '', 1: '' },
         toast: null
       };
+
+      // Expose state globally so inline handlers never fail
+      window.appState = state;
 
       try {
         const savedH = localStorage.getItem(HISTORY_KEY);
@@ -277,10 +279,18 @@
 
       window.appAct = {
         nav: function (scr) {
-          state.prevScreen = state.screen;
-          state.screen = scr;
+          if (scr !== state.screen) {
+            state.prevScreen = state.screen;
+            state.screen = scr;
+          }
           state.drawerOpen = false;
           if (scr === 'currency') fetchLiveFx(state.fxFrom);
+          render();
+        },
+        closeHistory: function () {
+          const target = (state.prevScreen && state.prevScreen !== 'history') ? state.prevScreen : 'citizen';
+          state.screen = target;
+          state.drawerOpen = false;
           render();
         },
         toggleDrawer: function (open) {
@@ -567,7 +577,7 @@
         `;
       }
 
-      // Full-screen fixed non-scrolling Citizen Calculator with #15191D keyboard background
+      // Citizen Calculator: Taller LCD box, bigger font sizes, and compact 3-button row (CHECK | CORRECT/DELETE | CLEAR)
       function renderCitizenScreen() {
         const numVal = parseFloat(state.displayValue) || 0;
         const e = state.emiResult;
@@ -587,20 +597,22 @@
 
             ${state.citizenSubMode === 'CITIZEN' ? `
               <main class="flex-1 w-full bg-[#15191D] flex flex-col justify-between p-1.5 gap-1.5 overflow-hidden min-h-0">
-                <div class="shrink-0 lcd-panel rounded-xl px-3.5 py-2.5 min-h-[115px] flex flex-col justify-between">
-                  <div class="flex justify-between text-[11px] font-mono-num font-bold opacity-80 border-b border-black/15 pb-1">
+                <!-- Taller LCD Green Box with Larger Font Size -->
+                <div class="shrink-0 lcd-panel rounded-xl px-4 py-3 h-[25dvh] min-h-[158px] max-h-[210px] flex flex-col justify-between">
+                  <div class="flex justify-between items-center text-xs sm:text-sm font-mono-num font-bold opacity-85 border-b border-black/20 pb-1.5">
                     <span>CT-512N CITIZEN ${state.memoryValue ? '· M:' + formatNum(state.memoryValue) : ''} · GT: ${formatNum(state.grandTotal)}</span>
-                    <span class="truncate max-w-[180px]">${state.expression}</span>
+                    <span class="truncate max-w-[200px] text-sm sm:text-base font-extrabold">${state.expression}</span>
                   </div>
-                  <div class="font-mono-num font-extrabold text-4xl sm:text-5xl text-right my-1 truncate">${formatNum(numVal)}</div>
-                  <div class="flex justify-between text-[11px] font-mono-num opacity-75 border-t border-black/15 pt-1">
+                  <div class="font-mono-num font-extrabold text-5xl sm:text-6xl text-right my-auto py-1 leading-none truncate">${formatNum(numVal)}</div>
+                  <div class="flex justify-between items-center text-xs sm:text-sm font-mono-num font-semibold opacity-80 border-t border-black/20 pt-1.5">
                     <span class="truncate">${state.settings.numberFormat === 'INDIA' ? toIndianWords(numVal) : toWesternWords(numVal)}</span>
-                    <span class="shrink-0 ml-2">STEPS: ${String(state.stepsList.length).padStart(2, '0')}</span>
+                    <span class="shrink-0 ml-2 font-bold">STEPS: ${String(state.stepsList.length).padStart(2, '0')}</span>
                   </div>
                 </div>
 
+                <!-- Keypad with Compact 3-button row (h-10 shrink-0) + 5 flex-1 rows -->
                 <div class="flex-1 flex flex-col gap-1.5 min-h-0">
-                  <div class="flex-1 grid grid-cols-3 gap-1.5 min-h-0">
+                  <div class="h-10 sm:h-11 shrink-0 grid grid-cols-3 gap-1.5">
                     <button onclick="appAct.shareText('${formatNum(numVal)}')" class="h-full w-full rounded-xl key-blue font-bold text-xs sm:text-sm">CHECK</button>
                     <button onclick="appAct.del()" class="h-full w-full rounded-xl key-blue-sec font-bold text-xs sm:text-sm">CORRECT / DELETE</button>
                     <button onclick="appAct.clear()" class="h-full w-full rounded-xl key-red font-bold text-xs sm:text-sm">CLEAR</button>
@@ -648,17 +660,17 @@
                   <h2 class="font-bold text-base text-[#10232B]">Loan EMI Calculator</h2>
                   <div>
                     <label class="block text-xs font-bold text-neutral-600 mb-1">Loan Amount (${state.settings.currencySymbol})</label>
-                    <input type="number" value="${state.emiLoan}" oninput="state.emiLoan=this.value" class="w-full px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
+                    <input type="number" value="${state.emiLoan}" oninput="window.appState.emiLoan=this.value" class="w-full px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-neutral-600 mb-1">Annual Interest Rate (%)</label>
-                    <input type="number" step="0.1" value="${state.emiRate}" oninput="state.emiRate=this.value" class="w-full px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
+                    <input type="number" step="0.1" value="${state.emiRate}" oninput="window.appState.emiRate=this.value" class="w-full px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
                   </div>
                   <div>
                     <label class="block text-xs font-bold text-neutral-600 mb-1">Loan Tenure (${state.emiUnit})</label>
                     <div class="flex gap-2">
-                      <input type="number" value="${state.emiTenure}" oninput="state.emiTenure=this.value" class="flex-1 px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
-                      <button onclick="state.emiUnit=state.emiUnit==='YEARS'?'MONTHS':'YEARS';appAct.calcEmi()" class="px-4 py-2 rounded-xl bg-[#10232B] text-white text-xs font-bold">${state.emiUnit}</button>
+                      <input type="number" value="${state.emiTenure}" oninput="window.appState.emiTenure=this.value" class="flex-1 px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
+                      <button onclick="window.appState.emiUnit=window.appState.emiUnit==='YEARS'?'MONTHS':'YEARS';appAct.calcEmi()" class="px-4 py-2 rounded-xl bg-[#10232B] text-white text-xs font-bold">${state.emiUnit}</button>
                     </div>
                   </div>
                   <button onclick="appAct.calcEmi()" class="w-full py-2.5 rounded-xl bg-[#347BCB] text-white font-bold text-sm">Calculate EMI</button>
@@ -678,7 +690,7 @@
         `;
       }
 
-      // Full-screen fixed non-scrolling GST Calculator with #15191D keyboard background
+      // Full-screen fixed non-scrolling GST Calculator
       function renderGstScreen() {
         const numVal = parseFloat(state.displayValue) || 0;
         const g = state.gstResult;
@@ -698,14 +710,14 @@
             </header>
 
             <main class="flex-1 w-full bg-[#15191D] flex flex-col justify-between p-1.5 gap-1.5 overflow-hidden min-h-0">
-              <div class="shrink-0 lcd-panel rounded-xl px-3 py-2 flex flex-col justify-between">
-                <div class="flex justify-between text-[11px] font-mono-num font-bold opacity-80 border-b border-black/15 pb-0.5">
+              <div class="shrink-0 lcd-panel rounded-xl px-3.5 py-2.5 min-h-[150px] flex flex-col justify-between">
+                <div class="flex justify-between text-xs font-mono-num font-bold opacity-85 border-b border-black/20 pb-1">
                   <span>CITIZEN GST LCD ${state.memoryValue ? '· M:' + formatNum(state.memoryValue) : ''} · GT:${formatNum(state.grandTotal)}</span>
-                  <span class="truncate max-w-[170px]">${state.expression}</span>
+                  <span class="truncate max-w-[180px] text-sm font-extrabold">${state.expression}</span>
                 </div>
                 <div class="my-1 text-right">
-                  <div class="font-mono-num font-extrabold text-3xl sm:text-4xl truncate">${sym}${formatNum(numVal)}</div>
-                  <div class="text-[10px] opacity-75 truncate">${state.settings.numberFormat === 'INDIA' ? toIndianWords(numVal) : toWesternWords(numVal)}</div>
+                  <div class="font-mono-num font-extrabold text-4xl sm:text-5xl leading-none truncate">${sym}${formatNum(numVal)}</div>
+                  <div class="text-xs font-semibold opacity-80 mt-1 truncate">${state.settings.numberFormat === 'INDIA' ? toIndianWords(numVal) : toWesternWords(numVal)}</div>
                 </div>
                 <div class="grid grid-cols-4 gap-1 pt-1 border-t border-black/20 text-[10px] font-mono-num">
                   <div class="bg-black/5 rounded px-1.5 py-0.5"><div class="opacity-75">Net</div><div class="font-bold truncate">${sym}${formatNum(g ? g.originalAmount : numVal)}</div></div>
@@ -716,10 +728,10 @@
               </div>
 
               <div class="flex-1 flex flex-col gap-1.5 min-h-0">
-                <div class="flex-1 grid grid-cols-4 gap-1.5 min-h-0">
+                <div class="h-9 sm:h-10 shrink-0 grid grid-cols-4 gap-1.5">
                   <button onclick="appAct.shareText('${sym}${formatNum(numVal)}')" class="h-full w-full rounded-xl key-blue font-bold text-xs">CHECK</button>
                   <button onclick="appAct.del()" class="h-full w-full rounded-xl key-blue-sec font-bold text-xs">CORRECT</button>
-                  <button onclick="appAct.setGstPreset(state.settings.gstRates[0]===5?[3,5,12,18,28]:[5,10,15,20,25])" class="h-full w-full rounded-xl key-blue font-bold text-[11px]">CHANGE GST %</button>
+                  <button onclick="appAct.setGstPreset(window.appState.settings.gstRates[0]===5?[3,5,12,18,28]:[5,10,15,20,25])" class="h-full w-full rounded-xl key-blue font-bold text-[11px]">CHANGE GST %</button>
                   <button onclick="appAct.clear()" class="h-full w-full rounded-xl key-red font-bold text-xs">CLEAR (C)</button>
                 </div>
 
@@ -864,17 +876,18 @@
           <div class="h-[100dvh] w-full overflow-y-auto bg-[#F2FFF7] flex flex-col">
             <header class="sticky top-0 z-30 bg-[#657780] text-white h-14 px-4 flex items-center justify-between shadow-md shrink-0">
               <div class="flex items-center gap-3">
-                <button onclick="appAct.nav(state.prevScreen==='history'?'citizen':state.prevScreen)" class="w-10 h-10 rounded-lg hover:bg-white/15 flex items-center justify-center text-xl">←</button>
+                <button type="button" onclick="appAct.closeHistory()" aria-label="Close History" class="w-10 h-10 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 flex items-center justify-center text-xl font-bold transition-all">←</button>
                 <h1 class="text-lg font-bold">History</h1>
               </div>
               <div class="flex items-center gap-2">
-                <button onclick="appAct.clearHistory()" class="px-3 py-1.5 rounded-lg bg-white/15 text-xs font-bold">🗑 Clear All</button>
+                <button type="button" onclick="appAct.clearHistory()" class="px-3 py-1.5 rounded-lg bg-white/15 text-xs font-bold">🗑 Clear All</button>
               </div>
             </header>
             <main class="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-5 space-y-3">
               ${state.history.length === 0 ? `
-                <div class="bg-white rounded-2xl p-10 text-center border border-[#E9E9EC]">
+                <div class="bg-white rounded-2xl p-10 text-center border border-[#E9E9EC] space-y-3">
                   <div class="font-bold text-[#10232B]">No Calculation History Yet</div>
+                  <button type="button" onclick="appAct.closeHistory()" class="px-4 py-2 rounded-xl bg-[#347BCB] text-white text-xs font-bold">← Back to Calculator</button>
                 </div>
               ` : state.history.map(item => `
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-[#E9E9EC] flex items-stretch gap-3">
@@ -935,9 +948,9 @@
               <div class="bg-white rounded-2xl p-5 shadow-lg border border-[#E9E9EC] space-y-4">
                 <h3 class="font-bold text-base">Enter Birth Date</h3>
                 <div class="grid grid-cols-3 gap-3">
-                  <div><label class="text-xs text-neutral-500">Day (DD)</label><input type="number" value="${state.dobDay}" oninput="state.dobDay=this.value" class="w-full px-3 py-2.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold text-lg" /></div>
-                  <div><label class="text-xs text-neutral-500">Month (MM)</label><input type="number" value="${state.dobMonth}" oninput="state.dobMonth=this.value" class="w-full px-3 py-2.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold text-lg" /></div>
-                  <div><label class="text-xs text-neutral-500">Year (YYYY)</label><input type="number" value="${state.dobYear}" oninput="state.dobYear=this.value" class="w-full px-3 py-2.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold text-lg" /></div>
+                  <div><label class="text-xs text-neutral-500">Day (DD)</label><input type="number" value="${state.dobDay}" oninput="window.appState.dobDay=this.value" class="w-full px-3 py-2.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold text-lg" /></div>
+                  <div><label class="text-xs text-neutral-500">Month (MM)</label><input type="number" value="${state.dobMonth}" oninput="window.appState.dobMonth=this.value" class="w-full px-3 py-2.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold text-lg" /></div>
+                  <div><label class="text-xs text-neutral-500">Year (YYYY)</label><input type="number" value="${state.dobYear}" oninput="window.appState.dobYear=this.value" class="w-full px-3 py-2.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold text-lg" /></div>
                 </div>
                 <button onclick="window.rerenderApp()" class="w-full py-3 rounded-xl bg-[#347BCB] text-white font-bold text-sm">Calculate Age</button>
               </div>
@@ -983,8 +996,8 @@
                 <div class="flex justify-between items-center border-b border-[#E9E9EC] pb-2.5">
                   <span class="text-xs font-bold text-[#10232B]">Display Format</span>
                   <div class="flex gap-1 bg-neutral-100 p-1 rounded-xl">
-                    <button onclick="state.cashFormat='INDIA';window.rerenderApp()" class="px-3 py-1 rounded-lg text-xs font-bold ${state.cashFormat==='INDIA'?'bg-[#347BCB] text-white':''}">India</button>
-                    <button onclick="state.cashFormat='WESTERN';window.rerenderApp()" class="px-3 py-1 rounded-lg text-xs font-bold ${state.cashFormat==='WESTERN'?'bg-[#347BCB] text-white':''}">Western</button>
+                    <button onclick="window.appState.cashFormat='INDIA';window.rerenderApp()" class="px-3 py-1 rounded-lg text-xs font-bold ${state.cashFormat==='INDIA'?'bg-[#347BCB] text-white':''}">India</button>
+                    <button onclick="window.appState.cashFormat='WESTERN';window.rerenderApp()" class="px-3 py-1 rounded-lg text-xs font-bold ${state.cashFormat==='WESTERN'?'bg-[#347BCB] text-white':''}">Western</button>
                   </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
@@ -1050,8 +1063,8 @@
                 <h2 class="font-bold text-base text-[#10232B]">All-in-One Citizen &amp; GST Calculator</h2>
                 <p class="text-xs text-neutral-600">Includes Citizen Calculator with Loan EMI, GST Rates Calculator, Currency Converter, Calculation History, Age Calculator, and Banknote Cash Counter.</p>
                 <div class="flex gap-2 pt-2">
-                  <button onclick="state.settings.numberFormat='INDIA';window.rerenderApp()" class="px-4 py-2 rounded-xl text-xs font-bold ${state.settings.numberFormat==='INDIA'?'bg-[#347BCB] text-white':'bg-neutral-100'}">India Format (Lakh/Crore)</button>
-                  <button onclick="state.settings.numberFormat='WESTERN';window.rerenderApp()" class="px-4 py-2 rounded-xl text-xs font-bold ${state.settings.numberFormat==='WESTERN'?'bg-[#347BCB] text-white':'bg-neutral-100'}">Western Format (Million)</button>
+                  <button onclick="window.appState.settings.numberFormat='INDIA';window.rerenderApp()" class="px-4 py-2 rounded-xl text-xs font-bold ${state.settings.numberFormat==='INDIA'?'bg-[#347BCB] text-white':'bg-neutral-100'}">India Format (Lakh/Crore)</button>
+                  <button onclick="window.appState.settings.numberFormat='WESTERN';window.rerenderApp()" class="px-4 py-2 rounded-xl text-xs font-bold ${state.settings.numberFormat==='WESTERN'?'bg-[#347BCB] text-white':'bg-neutral-100'}">Western Format (Million)</button>
                 </div>
               </div>
             </main>

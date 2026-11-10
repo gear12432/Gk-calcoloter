@@ -118,7 +118,7 @@ export default function AllInOneCalculatorApp() {
             onClearAllHistory={handleClearAllHistory}
             onBack={() =>
               handleNavigate(
-                previousScreen === 'history' ? 'gst' : previousScreen
+                previousScreen === 'history' ? 'citizen' : previousScreen
               )
             }
           />

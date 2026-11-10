@@ -494,10 +494,10 @@ export default function GstCalculatorScreen({
 
       {/* Full-Screen Fixed Non-Scrolling Calculator Body with Keyboard Background #15191D */}
       <main className="flex-1 w-full bg-[#15191D] flex flex-col justify-between p-1.5 gap-1.5 overflow-hidden min-h-0">
-        {/* Citizen LCD Green Display Panel */}
-        <div className="shrink-0 bg-[#A6B991] text-[#101010] rounded-xl px-3 py-2 shadow-inner border-2 border-[#8d9f78] flex flex-col justify-between">
+        {/* Citizen LCD Green Display Panel - Taller & Larger Font Size */}
+        <div className="shrink-0 bg-[#A6B991] text-[#101010] rounded-xl px-3.5 py-2.5 shadow-inner border-2 border-[#8d9f78] flex flex-col justify-between min-h-[152px] sm:min-h-[170px]">
           {/* Top LCD status row */}
-          <div className="flex items-center justify-between text-[11px] font-mono font-semibold text-[#101010]/80 border-b border-[#101010]/15 pb-0.5">
+          <div className="flex items-center justify-between text-xs font-mono font-bold text-[#101010]/85 border-b border-[#101010]/20 pb-1">
             <div className="flex items-center gap-2">
               <span>CITIZEN GST LCD</span>
               {memoryValue !== 0 && (
@@ -511,16 +511,18 @@ export default function GstCalculatorScreen({
                 </span>
               )}
             </div>
-            <span className="truncate max-w-[180px] text-right">{expression}</span>
+            <span className="truncate max-w-[200px] text-right text-sm font-extrabold">
+              {expression}
+            </span>
           </div>
 
           {/* Large Digital Calculator Display Value */}
-          <div className="my-1 text-right overflow-hidden">
-            <div className="font-mono font-extrabold text-3xl sm:text-4xl tracking-tight text-[#101010] tabular-nums leading-none truncate">
+          <div className="my-1.5 text-right overflow-hidden">
+            <div className="font-mono font-extrabold text-4xl sm:text-5xl tracking-tight text-[#101010] tabular-nums leading-none truncate">
               {settings.currencySymbol}
               {formattedMainDisplay}
             </div>
-            <div className="text-[10px] font-medium text-[#101010]/75 mt-0.5 truncate">
+            <div className="text-xs font-semibold text-[#101010]/80 mt-1 truncate">
               {settings.numberFormat === 'INDIA'
                 ? numberToIndianWords(numericDisplay)
                 : numberToWesternWords(numericDisplay)}
@@ -580,12 +582,12 @@ export default function GstCalculatorScreen({
 
         {/* All Action, GST Shortcut, and Citizen Keypad Rows - Stretches to fill 100% remaining height with zero scroll */}
         <div className="flex-1 flex flex-col gap-1.5 min-h-0">
-          {/* Utility Row: CHECK | CORRECT / DELETE | CHANGE GST % | CLEAR (C) */}
-          <div className="flex-1 grid grid-cols-4 gap-1.5 min-h-0">
+          {/* Utility Row: CHECK | CORRECT / DELETE | CHANGE GST % | CLEAR (C) (Compact height) */}
+          <div className="h-9 sm:h-10 shrink-0 grid grid-cols-4 gap-1.5">
             <button
               type="button"
               onClick={handleCheckSteps}
-              className="h-full w-full rounded-xl bg-[#347BCB] hover:bg-[#2c6ab0] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#1e4b80] flex items-center justify-center gap-1 transition-all"
+              className="h-full w-full rounded-xl bg-[#347BCB] hover:bg-[#2c6ab0] active:translate-y-0.5 text-white font-bold text-xs shadow-[0_2px_0_#1e4b80] flex items-center justify-center gap-1 transition-all"
             >
               <CheckCircle2 className="w-3.5 h-3.5 shrink-0 hidden sm:inline" />
               <span>CHECK</span>
@@ -593,7 +595,7 @@ export default function GstCalculatorScreen({
             <button
               type="button"
               onClick={handleCorrectDelete}
-              className="h-full w-full rounded-xl bg-[#548DD7] hover:bg-[#437bc4] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#2b5791] flex items-center justify-center gap-1 transition-all"
+              className="h-full w-full rounded-xl bg-[#548DD7] hover:bg-[#437bc4] active:translate-y-0.5 text-white font-bold text-xs shadow-[0_2px_0_#2b5791] flex items-center justify-center gap-1 transition-all"
             >
               <Delete className="w-3.5 h-3.5 shrink-0 hidden sm:inline" />
               <span>CORRECT</span>
@@ -605,7 +607,7 @@ export default function GstCalculatorScreen({
                 setCustomRatesInput(settings.gstRates.map(String));
                 setIsChangeGstOpen(true);
               }}
-              className="h-full w-full rounded-xl bg-[#347BCB] hover:bg-[#2c6ab0] active:translate-y-0.5 text-white font-bold text-[11px] sm:text-xs shadow-[0_3px_0_#1e4b80] flex items-center justify-center gap-1 px-1 transition-all"
+              className="h-full w-full rounded-xl bg-[#347BCB] hover:bg-[#2c6ab0] active:translate-y-0.5 text-white font-bold text-[11px] shadow-[0_2px_0_#1e4b80] flex items-center justify-center gap-1 px-1 transition-all"
             >
               <SlidersHorizontal className="w-3.5 h-3.5 shrink-0 hidden sm:inline" />
               <span>CHANGE GST %</span>
@@ -613,7 +615,7 @@ export default function GstCalculatorScreen({
             <button
               type="button"
               onClick={handleClear}
-              className="h-full w-full rounded-xl bg-[#D83B29] hover:bg-[#bf3222] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#8a2014] flex items-center justify-center transition-all"
+              className="h-full w-full rounded-xl bg-[#D83B29] hover:bg-[#bf3222] active:translate-y-0.5 text-white font-bold text-xs shadow-[0_2px_0_#8a2014] flex items-center justify-center transition-all"
             >
               CLEAR (C)
             </button>
