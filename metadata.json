@@ -1,0 +1,6 @@
+{
+  "name": "Citizen & GST All-in-One Calculator",
+  "description": "Complete professional All-in-One Calculator featuring GST Rates Calculator, Live Currency Converter, Citizen Calculator with Loan EMI, Calculation History, Age Calculator, and Banknote Cash Counter.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
