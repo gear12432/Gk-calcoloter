@@ -85,10 +85,40 @@
     .cursor-bar {
       animation: blinkCursor 1.1s infinite;
     }
+    .ad-banner-scale {
+      width: 728px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center center;
+      transform: scale(0.52);
+    }
+    @media (min-width: 640px) {
+      .ad-banner-scale {
+        transform: scale(0.62);
+      }
+    }
   </style>
 </head>
 <body class="h-[100dvh] w-full overflow-hidden flex flex-col bg-[#FAFBF9]">
-  <div id="app-root" class="h-[100dvh] w-full overflow-hidden flex flex-col"></div>
+  <div id="app-root" class="flex-1 min-h-0 w-full overflow-hidden flex flex-col"></div>
+
+  <!-- Persistent Centered Compact Adsterra Banner at Bottom of Every Screen -->
+  <div class="w-full h-[50px] sm:h-[58px] shrink-0 bg-[#F4F8F5] border-t border-[#DCE6DF] flex items-center justify-center overflow-hidden">
+    <div class="ad-banner-scale">
+      <script>
+        atOptions = {
+          'key' : 'b2a93467dc77728718626bcfd20b7620',
+          'format' : 'iframe',
+          'height' : 90,
+          'width' : 728,
+          'params' : {}
+        };
+      </script>
+      <script src="https://bicea.org/22/b2a93467dc77728718626bcfd20b7620"></script>
+    </div>
+  </div>
 
   <script>
     (function () {
@@ -770,9 +800,9 @@
         const convertedUnit = computeUnitValue();
 
         return `
-          <div class="h-[100dvh] w-full bg-[#FFFFFF] text-[#1F2421] flex flex-col justify-between overflow-hidden select-none">
+          <div class="h-full flex-1 min-h-0 w-full bg-[#FFFFFF] text-[#1F2421] flex flex-col justify-between overflow-hidden select-none">
             <!-- Top Display Area -->
-            <div class="relative w-full h-[30dvh] min-h-[175px] max-h-[260px] px-5 pt-3 pb-2 flex flex-col justify-between shrink-0">
+            <div class="relative w-full h-[27dvh] min-h-[150px] max-h-[235px] px-5 pt-2.5 pb-1.5 flex flex-col justify-between shrink-0">
               <!-- Subtle top bar with menu button to access other calculators -->
               <div class="flex items-center justify-between">
                 <button type="button" onclick="appAct.toggleDrawer(true)" aria-label="Open All Calculators Menu" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-[#5A655E] hover:bg-[#EBF3EE] active:scale-95 transition-all">
@@ -931,7 +961,7 @@
         const g = state.gstResult;
         const sym = state.settings.currencySymbol;
         return `
-          <div class="h-[100dvh] w-full bg-[#15191D] flex flex-col overflow-hidden">
+          <div class="h-full flex-1 min-h-0 w-full bg-[#15191D] flex flex-col overflow-hidden">
             <header class="shrink-0 bg-[#10232B] text-white h-12 px-2.5 flex items-center justify-between border-b border-[#25252D]">
               <div class="flex items-center gap-2">
                 <button onclick="appAct.toggleDrawer(true)" class="w-9 h-9 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
@@ -1030,7 +1060,7 @@
         const rate = state.fxRates[state.fxTo] || 1;
         const converted = amt * rate;
         return `
-          <div class="h-[100dvh] w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
+          <div class="h-full flex-1 min-h-0 w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
             <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md shrink-0">
               <div class="flex items-center gap-3">
                 <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
@@ -1110,7 +1140,7 @@
       function renderHistoryScreen() {
         const sym = state.settings.currencySymbol;
         return `
-          <div class="h-[100dvh] w-full overflow-y-auto bg-[#F2FFF7] flex flex-col">
+          <div class="h-full flex-1 min-h-0 w-full overflow-y-auto bg-[#F2FFF7] flex flex-col">
             <header class="sticky top-0 z-30 bg-[#657780] text-white h-14 px-4 flex items-center justify-between shadow-md shrink-0">
               <div class="flex items-center gap-3">
                 <button type="button" onclick="appAct.closeHistory()" aria-label="Close History" class="w-10 h-10 rounded-lg bg-white/15 hover:bg-white/25 active:scale-95 flex items-center justify-center text-xl font-bold transition-all">←</button>
@@ -1174,7 +1204,7 @@
         const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
         return `
-          <div class="h-[100dvh] w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
+          <div class="h-full flex-1 min-h-0 w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
             <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md shrink-0">
               <div class="flex items-center gap-3">
                 <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
@@ -1222,7 +1252,7 @@
         });
         const words = state.cashFormat === 'INDIA' ? toIndianWords(grandTotal) : toWesternWords(grandTotal);
         return `
-          <div class="h-[100dvh] w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
+          <div class="h-full flex-1 min-h-0 w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
             <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md shrink-0">
               <div class="flex items-center gap-3">
                 <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
@@ -1291,7 +1321,7 @@
       // Full-screen Settings / About Screen
       function renderSettingsOrAbout() {
         return `
-          <div class="h-[100dvh] w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
+          <div class="h-full flex-1 min-h-0 w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
             <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md shrink-0">
               <div class="flex items-center gap-3">
                 <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>

@@ -443,7 +443,7 @@ export default function GstCalculatorScreen({
       : formatNumber(numericDisplay, settings.numberFormat, settings.decimalPlaces);
 
   return (
-    <div className="h-[100dvh] w-full bg-[#15191D] flex flex-col overflow-hidden select-none">
+    <div className="h-full flex-1 min-h-0 w-full bg-[#15191D] flex flex-col overflow-hidden select-none">
       {/* Top Dark Navy Header - Flush, Zero Side/Top Gap */}
       <header className="shrink-0 bg-[#10232B] text-white h-12 px-2.5 flex items-center justify-between border-b border-[#25252D]">
         <div className="flex items-center gap-2">

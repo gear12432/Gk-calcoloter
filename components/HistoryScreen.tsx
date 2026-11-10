@@ -173,7 +173,7 @@ export default function HistoryScreen({
   };
 
   return (
-    <div className="h-[100dvh] w-full overflow-y-auto bg-[#F2FFF7] flex flex-col">
+    <div className="h-full flex-1 min-h-0 w-full overflow-y-auto bg-[#F2FFF7] flex flex-col">
       {/* Dark Grey-Blue Header: #657780 as required by Section 6 */}
       <header className="sticky top-0 z-30 bg-[#657780] text-white h-14 px-4 flex items-center justify-between shadow-md border-b border-black/10">
         <div className="flex items-center gap-3">

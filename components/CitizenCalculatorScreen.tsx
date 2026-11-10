@@ -347,7 +347,7 @@ export default function CitizenCalculatorScreen({
   }, [unitInputVal, fromUnit, toUnit]);
 
   return (
-    <div className="h-[100dvh] w-full bg-[#FFFFFF] text-[#1F2421] flex flex-col justify-between overflow-hidden select-none">
+    <div className="h-full flex-1 min-h-0 w-full bg-[#FFFFFF] text-[#1F2421] flex flex-col justify-between overflow-hidden select-none">
       {/* Top Display Area */}
       <div className="relative flex-1 min-h-0 flex flex-col justify-between px-5 pt-3 pb-2">
         {/* Top Row: Subtle Menu Trigger to switch calculators */}
@@ -463,7 +463,7 @@ export default function CitizenCalculatorScreen({
       </div>
 
       {/* Bottom Keypad / Inline History / Unit Converter Section */}
-      <div className="h-[62dvh] w-full px-4 pt-3 pb-4 flex flex-col justify-between overflow-hidden">
+      <div className="h-[56dvh] w-full px-4 pt-2 pb-2 flex flex-col justify-between overflow-hidden">
         {showInlineHistory ? (
           /* Inline History Panel when Clock icon is active */
           <div className="h-full flex flex-col justify-between bg-[#F6FAF7] rounded-2xl p-4 border border-[#DCE6DF]">

@@ -21,6 +21,7 @@ import {
   SettingsScreen,
   AboutScreen,
 } from '@/components/SettingsAndAboutScreens';
+import AdsterraBanner from '@/components/AdsterraBanner';
 
 export default function AllInOneCalculatorApp() {
   const [activeScreen, setActiveScreen] = useState<ScreenId>('citizen');
@@ -83,7 +84,7 @@ export default function AllInOneCalculatorApp() {
       />
 
       {/* Active Screen Container */}
-      <div className="flex-1 flex flex-col w-full h-full overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col w-full overflow-hidden">
         {activeScreen === 'gst' && (
           <GstCalculatorScreen
             settings={settings}
@@ -158,6 +159,9 @@ export default function AllInOneCalculatorApp() {
           />
         )}
       </div>
+
+      {/* Persistent Centered Compact Adsterra Banner at Bottom of Every Screen */}
+      <AdsterraBanner />
     </div>
   );
 }

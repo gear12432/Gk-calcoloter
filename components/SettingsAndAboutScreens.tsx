@@ -42,7 +42,7 @@ export function SettingsScreen({
   };
 
   return (
-    <div className="h-[100dvh] w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
+    <div className="h-full flex-1 min-h-0 w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
       <header className="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md border-b border-[#15191D]">
         <div className="flex items-center gap-3">
           <button
@@ -297,7 +297,7 @@ export function AboutScreen({ onOpenDrawer, onSelectScreen }: AboutScreenProps) 
   ];
 
   return (
-    <div className="h-[100dvh] w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
+    <div className="h-full flex-1 min-h-0 w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
       <header className="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md border-b border-[#15191D]">
         <div className="flex items-center gap-3">
           <button
