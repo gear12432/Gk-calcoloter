@@ -236,7 +236,7 @@ export default function HistoryScreen({
 
       {/* Sub-toolbar for Select All / Delete Selected */}
       {history.length > 0 && (
-        <div className="bg-white border-b border-[#E9E9EC] px-4 py-2.5 flex items-center justify-between max-w-4xl w-full mx-auto">
+        <div className="bg-white border-b border-[#E9E9EC] px-4 py-2.5 flex items-center justify-between w-full">
           <button
             type="button"
             onClick={toggleSelectAll}
@@ -281,7 +281,7 @@ export default function HistoryScreen({
 
       {/* Confirm Delete All Banner */}
       {confirmClearAll && (
-        <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-center justify-between max-w-4xl w-full mx-auto">
+        <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-center justify-between w-full">
           <span className="text-xs font-bold text-red-900">
             Delete all {history.length} saved calculation records permanently?
           </span>
@@ -308,8 +308,8 @@ export default function HistoryScreen({
         </div>
       )}
 
-      {/* Main Scrollable List of Calculation History Entries */}
-      <main className="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-5 space-y-3 overflow-y-auto">
+      {/* Main Scrollable List of Calculation History Entries - Full Width */}
+      <main className="flex-1 w-full p-3 sm:p-5 space-y-3 overflow-y-auto">
         {history.length === 0 ? (
           <div className="bg-white rounded-2xl p-10 text-center shadow-sm border border-[#E9E9EC]">
             <p className="text-base font-bold text-[#10232B]">

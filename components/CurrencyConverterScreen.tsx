@@ -246,8 +246,8 @@ export default function CurrencyConverterScreen({
         </div>
       </header>
 
-      {/* Main Content Layout */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-3 py-3 sm:px-5 sm:py-5 flex flex-col lg:grid lg:grid-cols-12 lg:gap-6 lg:items-start">
+      {/* Main Content Layout - Full Width & Full Height */}
+      <main className="flex-1 w-full px-3 py-3 sm:px-5 sm:py-4 flex flex-col lg:grid lg:grid-cols-12 lg:gap-5 lg:items-start">
         {/* Left / Top Column: Scrollable White Currency List with Individual Currency Cards */}
         <div className="w-full lg:col-span-7 order-2 lg:order-1 mt-4 lg:mt-0 flex flex-col">
           {/* Search Currencies Bar */}

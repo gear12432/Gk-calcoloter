@@ -294,8 +294,8 @@ export default function AgeCalculatorScreen({
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 w-full max-w-3xl mx-auto px-3 py-4 sm:px-5 sm:py-6 space-y-4">
+      {/* Main Content - Full Width & Full Height */}
+      <main className="flex-1 w-full px-3 py-3 sm:px-5 sm:py-4 space-y-3.5">
         {/* Large Bold Centered Heading: Age Calculator */}
         <div className="text-center">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-[#10232B] tracking-tight">

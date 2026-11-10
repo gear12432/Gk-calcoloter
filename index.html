@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Citizen &amp; GST All-in-One Calculator</title>
-  <meta name="description" content="Complete professional All-in-One Calculator featuring Citizen Calculator with Loan EMI, GST Rates Calculator, Live Currency Converter, Calculation History, Age Calculator, and Banknote Cash Counter." />
+  <meta name="description" content="Complete professional All-in-One Calculator featuring Modern Circular Calculator with Scientific &amp; Unit Converter, GST Rates Calculator, Live Currency Converter, Calculation History, Age Calculator, and Banknote Cash Counter." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -34,7 +34,7 @@
       height: 100dvh;
       overflow: hidden;
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #15191D;
+      background-color: #FAFBF9;
       color: #171717;
     }
     .font-mono-num {
@@ -78,9 +78,16 @@
       border: 2px solid #8d9f78;
       box-shadow: inset 0 2px 6px rgba(0,0,0,0.2);
     }
+    @keyframes blinkCursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+    .cursor-bar {
+      animation: blinkCursor 1.1s infinite;
+    }
   </style>
 </head>
-<body class="h-[100dvh] w-full overflow-hidden flex flex-col bg-[#15191D]">
+<body class="h-[100dvh] w-full overflow-hidden flex flex-col bg-[#FAFBF9]">
   <div id="app-root" class="h-[100dvh] w-full overflow-hidden flex flex-col"></div>
 
   <script>
@@ -102,6 +109,56 @@
         { code: 'KWD', name: 'Kuwaiti Dinar', symbol: 'د.ك', country: 'Kuwait', flag: '🇰🇼' }
       ];
 
+      const UNIT_CATEGORIES = {
+        LENGTH: {
+          label: 'Length',
+          units: [
+            { code: 'm', name: 'Meters (m)', factor: 1 },
+            { code: 'km', name: 'Kilometers (km)', factor: 1000 },
+            { code: 'cm', name: 'Centimeters (cm)', factor: 0.01 },
+            { code: 'mm', name: 'Millimeters (mm)', factor: 0.001 },
+            { code: 'in', name: 'Inches (in)', factor: 0.0254 },
+            { code: 'ft', name: 'Feet (ft)', factor: 0.3048 },
+            { code: 'mi', name: 'Miles (mi)', factor: 1609.344 }
+          ]
+        },
+        WEIGHT: {
+          label: 'Weight',
+          units: [
+            { code: 'kg', name: 'Kilograms (kg)', factor: 1 },
+            { code: 'g', name: 'Grams (g)', factor: 0.001 },
+            { code: 'lb', name: 'Pounds (lb)', factor: 0.45359237 },
+            { code: 'oz', name: 'Ounces (oz)', factor: 0.02834952 }
+          ]
+        },
+        TEMP: {
+          label: 'Temp',
+          units: [
+            { code: 'C', name: 'Celsius (°C)', factor: 1 },
+            { code: 'F', name: 'Fahrenheit (°F)', factor: 1 },
+            { code: 'K', name: 'Kelvin (K)', factor: 1 }
+          ]
+        },
+        AREA: {
+          label: 'Area',
+          units: [
+            { code: 'sqm', name: 'Sq. Meter (m²)', factor: 1 },
+            { code: 'sqft', name: 'Sq. Feet (ft²)', factor: 0.092903 },
+            { code: 'acre', name: 'Acres', factor: 4046.856 },
+            { code: 'hectare', name: 'Hectares', factor: 10000 }
+          ]
+        },
+        DATA: {
+          label: 'Data',
+          units: [
+            { code: 'MB', name: 'Megabytes (MB)', factor: 1 },
+            { code: 'GB', name: 'Gigabytes (GB)', factor: 1024 },
+            { code: 'TB', name: 'Terabytes (TB)', factor: 1048576 },
+            { code: 'KB', name: 'Kilobytes (KB)', factor: 1 / 1024 }
+          ]
+        }
+      };
+
       const INDIAN_DENOMINATIONS = [500, 200, 100, 50, 20, 10, 5, 2, 1];
       const HISTORY_KEY = 'all_in_one_calc_history_v1';
       const SETTINGS_KEY = 'all_in_one_calc_settings_v1';
@@ -110,6 +167,15 @@
         screen: 'citizen',
         prevScreen: 'citizen',
         drawerOpen: false,
+        // Modern Circular Citizen Calculator State (matches uploaded screenshot)
+        citExpr: '692÷12',
+        citToolPanel: 'NONE', // 'NONE' | 'HISTORY' | 'RULER' | 'SCIENTIFIC'
+        citRadMode: false,
+        unitCategory: 'LENGTH',
+        unitInput: '1',
+        unitFrom: 'm',
+        unitTo: 'ft',
+        // GST & Other Calculators State
         settings: {
           numberFormat: 'INDIA',
           currencySymbol: '₹',
@@ -121,6 +187,14 @@
           {
             id: 'sample-1',
             timestamp: '2025-02-15T10:30:00.000Z',
+            type: 'CITIZEN',
+            expression: '692÷12',
+            originalAmount: 692,
+            finalAmount: 57.6666666667
+          },
+          {
+            id: 'sample-2',
+            timestamp: '2025-02-15T09:15:00.000Z',
             type: 'GST',
             expression: '10000 + 18% GST',
             originalAmount: 10000,
@@ -130,19 +204,6 @@
             sgstAmount: 900,
             igstAmount: 1800,
             finalAmount: 11800
-          },
-          {
-            id: 'sample-2',
-            timestamp: '2025-02-15T09:15:00.000Z',
-            type: 'GST',
-            expression: '25000 + 15% GST',
-            originalAmount: 25000,
-            gstRate: 15,
-            gstAmount: 3750,
-            cgstAmount: 1875,
-            sgstAmount: 1875,
-            igstAmount: 3750,
-            finalAmount: 28750
           }
         ],
         displayValue: '0',
@@ -154,12 +215,6 @@
         grandTotal: 0,
         stepsList: [],
         gstResult: null,
-        citizenSubMode: 'CITIZEN',
-        emiLoan: '500000',
-        emiRate: '8.5',
-        emiTenure: '5',
-        emiUnit: 'YEARS',
-        emiResult: { monthlyEmi: 10258.27, principal: 500000, totalInterest: 115495.98, totalPayment: 615495.98, months: 60 },
         fxFrom: 'USD',
         fxTo: 'INR',
         fxAmount: '100',
@@ -174,7 +229,6 @@
         toast: null
       };
 
-      // Expose state globally so inline handlers never fail
       window.appState = state;
 
       try {
@@ -203,6 +257,55 @@
         const locale = (fmt || state.settings.numberFormat) === 'INDIA' ? 'en-IN' : 'en-US';
         const dec = maxDec !== undefined ? maxDec : state.settings.decimalPlaces;
         return new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: dec }).format(n);
+      }
+
+      // Safe evaluation for the modern circular calculator
+      function evaluateCalcExpression(rawExpr, radMode) {
+        if (!rawExpr || !rawExpr.trim()) return '';
+        let cleaned = rawExpr.replace(/[÷×−+^(\.]$/, '');
+        if (!cleaned) return '';
+        const openCount = (cleaned.match(/\(/g) || []).length;
+        const closeCount = (cleaned.match(/\)/g) || []).length;
+        if (openCount > closeCount) {
+          cleaned += ')'.repeat(openCount - closeCount);
+        }
+        try {
+          const degFactor = radMode ? '1' : '(Math.PI/180)';
+          const jsExpr = cleaned
+            .replace(/÷/g, '/')
+            .replace(/×/g, '*')
+            .replace(/−/g, '-')
+            .replace(/π/g, '(Math.PI)')
+            .replace(/e/g, '(Math.E)')
+            .replace(/√\(/g, 'Math.sqrt(')
+            .replace(/sin\(/g, 'Math.sin(' + degFactor + '*')
+            .replace(/cos\(/g, 'Math.cos(' + degFactor + '*')
+            .replace(/tan\(/g, 'Math.tan(' + degFactor + '*')
+            .replace(/ln\(/g, 'Math.log(')
+            .replace(/log\(/g, 'Math.log10(')
+            .replace(/\^/g, '**')
+            .replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
+
+          if (!/^[0-9+\-*/().\sMathPIEsqrtincoalg,_*]+$/.test(jsExpr)) {
+            return '';
+          }
+          const fn = new Function('return (' + jsExpr + ')');
+          const res = fn();
+          if (typeof res !== 'number' || !Number.isFinite(res)) return '';
+          if (Number.isInteger(res)) return String(res);
+          return parseFloat(res.toFixed(10)).toString();
+        } catch (e) {
+          return '';
+        }
+      }
+
+      function renderColoredExpression(expr) {
+        if (!expr) return '<span class="text-[#333333]">0</span>';
+        const tokens = expr.split(/([÷×−+%()])/g).filter(Boolean);
+        return tokens.map(part => {
+          const isOpOrParen = /^[÷×−+%()]$/.test(part);
+          return `<span class="${isOpOrParen ? 'text-[#3A8918] font-normal px-[1px]' : 'text-[#333333]'}">${part}</span>`;
+        }).join('');
       }
 
       const ONES = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
@@ -297,6 +400,114 @@
           state.drawerOpen = open !== undefined ? open : !state.drawerOpen;
           render();
         },
+        // Modern Circular Citizen Calculator Handlers
+        citDigit: function (d) {
+          state.citExpr = state.citExpr === '0' ? d : (state.citExpr.length >= 28 ? state.citExpr : state.citExpr + d);
+          render();
+        },
+        citOp: function (op) {
+          if (!state.citExpr) {
+            if (op === '−') state.citExpr = '−';
+            render();
+            return;
+          }
+          if (/[÷×−+]$/.test(state.citExpr)) {
+            state.citExpr = state.citExpr.slice(0, -1) + op;
+          } else {
+            state.citExpr += op;
+          }
+          render();
+        },
+        citPercent: function () {
+          if (!state.citExpr || /[÷×−+(]$/.test(state.citExpr)) return;
+          state.citExpr += '%';
+          render();
+        },
+        citBrackets: function () {
+          const openCount = (state.citExpr.match(/\(/g) || []).length;
+          const closeCount = (state.citExpr.match(/\)/g) || []).length;
+          const lastChar = state.citExpr.slice(-1);
+          if (!state.citExpr || /[÷×−+(]$/.test(lastChar)) {
+            state.citExpr += '(';
+          } else if (openCount > closeCount && /[0-9)%πe]$/.test(lastChar)) {
+            state.citExpr += ')';
+          } else {
+            state.citExpr += '×(';
+          }
+          render();
+        },
+        citDecimal: function () {
+          const parts = state.citExpr.split(/[÷×−+()]/);
+          const currentNum = parts[parts.length - 1] || '';
+          if (currentNum.includes('.')) return;
+          state.citExpr = (!state.citExpr || /[÷×−+(]$/.test(state.citExpr)) ? state.citExpr + '0.' : state.citExpr + '.';
+          render();
+        },
+        citPlusMinus: function () {
+          if (!state.citExpr) {
+            state.citExpr = '(−';
+            render();
+            return;
+          }
+          if (state.citExpr.startsWith('(−') && state.citExpr.endsWith(')')) {
+            state.citExpr = state.citExpr.slice(2, -1);
+            render();
+            return;
+          }
+          const match = state.citExpr.match(/(\d+(?:\.\d+)?)$/);
+          if (match) {
+            const num = match[1];
+            const prefix = state.citExpr.slice(0, state.citExpr.length - num.length);
+            if (prefix.endsWith('(−')) {
+              state.citExpr = prefix.slice(0, -2) + num;
+            } else {
+              state.citExpr = prefix + '(−' + num;
+            }
+            render();
+          }
+        },
+        citBackspace: function () {
+          state.citExpr = state.citExpr.slice(0, -1);
+          render();
+        },
+        citClear: function () {
+          state.citExpr = '';
+          render();
+        },
+        citEquals: function () {
+          const preview = evaluateCalcExpression(state.citExpr, state.citRadMode);
+          if (!preview) return;
+          const numResult = parseFloat(preview);
+          if (Number.isFinite(numResult)) {
+            const firstMatch = state.citExpr.match(/\d+(?:\.\d+)?/);
+            const firstNum = firstMatch ? parseFloat(firstMatch[0]) : numResult;
+            addHistory({
+              type: 'CITIZEN',
+              expression: state.citExpr,
+              originalAmount: firstNum,
+              finalAmount: numResult
+            });
+            state.citExpr = preview;
+            render();
+          }
+        },
+        citSci: function (token) {
+          if (token === 'x²') state.citExpr += '^2';
+          else if (token === 'xʸ') state.citExpr += '^';
+          else if (token === 'π' || token === 'e') {
+            const needsMult = state.citExpr && /[0-9)%πe]$/.test(state.citExpr);
+            state.citExpr += (needsMult ? '×' + token : token);
+          } else {
+            const needsMult = state.citExpr && /[0-9)%πe]$/.test(state.citExpr);
+            state.citExpr += (needsMult ? '×' + token + '(' : token + '(');
+          }
+          render();
+        },
+        citTogglePanel: function (panel) {
+          state.citToolPanel = state.citToolPanel === panel ? 'NONE' : panel;
+          render();
+        },
+        // GST & Other Screen Handlers
         digit: function (d) {
           state.gstResult = null;
           if (state.waitingForOperand) {
@@ -460,29 +671,6 @@
           persist();
           render();
         },
-        calcEmi: function () {
-          const P = parseFloat(state.emiLoan) || 0;
-          const R = parseFloat(state.emiRate) || 0;
-          const T = parseFloat(state.emiTenure) || 1;
-          const n = state.emiUnit === 'YEARS' ? Math.round(T * 12) : Math.round(T);
-          const r = R > 0 ? R / 12 / 100 : 0;
-          const emi = r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-          const totalPayment = emi * n;
-          state.emiResult = {
-            monthlyEmi: Number(emi.toFixed(2)),
-            principal: P,
-            totalInterest: Number((totalPayment - P).toFixed(2)),
-            totalPayment: Number(totalPayment.toFixed(2)),
-            months: n
-          };
-          addHistory({
-            type: 'EMI',
-            expression: 'Loan ' + state.settings.currencySymbol + formatNum(P) + ' @ ' + R + '%',
-            originalAmount: P,
-            finalAmount: state.emiResult.monthlyEmi
-          });
-          render();
-        },
         swapFx: function () {
           const tmp = state.fxFrom;
           state.fxFrom = state.fxTo;
@@ -529,10 +717,30 @@
         return b;
       }
 
+      function computeUnitValue() {
+        const val = parseFloat(state.unitInput);
+        if (!Number.isFinite(val)) return '0';
+        if (state.unitCategory === 'TEMP') {
+          let celsius = val;
+          if (state.unitFrom === 'F') celsius = ((val - 32) * 5) / 9;
+          if (state.unitFrom === 'K') celsius = val - 273.15;
+          let out = celsius;
+          if (state.unitTo === 'F') out = (celsius * 9) / 5 + 32;
+          if (state.unitTo === 'K') out = celsius + 273.15;
+          return parseFloat(out.toFixed(4)).toString();
+        }
+        const list = UNIT_CATEGORIES[state.unitCategory].units;
+        const fromObj = list.find(u => u.code === state.unitFrom) || list[0];
+        const toObj = list.find(u => u.code === state.unitTo) || list[1] || list[0];
+        const baseVal = val * fromObj.factor;
+        const result = baseVal / toObj.factor;
+        return parseFloat(result.toFixed(6)).toString();
+      }
+
       function renderDrawer() {
         if (!state.drawerOpen) return '';
         const items = [
-          { id: 'citizen', label: 'Citizen Calculator', sub: 'GT, MU, Memory & Loan EMI', icon: '🧮' },
+          { id: 'citizen', label: 'Citizen Calculator', sub: 'Circular Keypad, Scientific & Unit Converter', icon: '🧮' },
           { id: 'gst', label: 'GST Rates', sub: 'CGST, SGST, IGST & Slabs', icon: '±%' },
           { id: 'currency', label: 'Currency Converter', sub: 'Live Global Exchange Rates', icon: '🌐' },
           { id: 'history', label: 'History', sub: 'Saved Calculation Records (' + state.history.length + ')', icon: '🕒' },
@@ -548,7 +756,7 @@
               <div>
                 <div class="bg-[#10232B] text-white p-5 flex items-center justify-between">
                   <div class="flex items-center gap-3">
-                    <div class="w-11 h-11 rounded-xl bg-[#A6B991] text-[#101010] flex items-center justify-center font-mono-num font-bold text-lg">±%</div>
+                    <div class="w-11 h-11 rounded-xl bg-[#429619] text-white flex items-center justify-center font-mono-num font-bold text-lg">=</div>
                     <div>
                       <div class="font-bold text-base">All-in-One Calculator</div>
                       <div class="text-xs text-[#C5F4D5]">Citizen · GST · Cash · FX</div>
@@ -569,122 +777,171 @@
                 </nav>
               </div>
               <div class="p-4 bg-[#F2FFF7] border-t border-[#E9E9EC] text-xs text-[#10232B] flex justify-between">
-                <span>Citizen LCD Series</span>
-                <span>Full-Screen Fixed</span>
+                <span>All Calculators</span>
+                <span>100% Full-Screen</span>
               </div>
             </aside>
           </div>
         `;
       }
 
-      // Citizen Calculator: Taller LCD box, bigger font sizes, and compact 3-button row (CHECK | CORRECT/DELETE | CLEAR)
+      // Exact Modern White & Green Circular Button Citizen Calculator matching uploaded image
       function renderCitizenScreen() {
-        const numVal = parseFloat(state.displayValue) || 0;
-        const e = state.emiResult;
+        const livePreview = evaluateCalcExpression(state.citExpr, state.citRadMode);
+        const unitList = UNIT_CATEGORIES[state.unitCategory].units;
+        const convertedUnit = computeUnitValue();
+
         return `
-          <div class="h-[100dvh] w-full bg-[#15191D] flex flex-col overflow-hidden">
-            <header class="shrink-0 bg-[#10232B] text-white h-12 px-2.5 flex items-center justify-between border-b border-[#25252D]">
-              <div class="flex items-center gap-2">
-                <button onclick="appAct.toggleDrawer(true)" class="w-9 h-9 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
-                <h1 class="text-base sm:text-lg font-bold">Citizen Calculator</h1>
+          <div class="h-[100dvh] w-full bg-[#FAFBF9] text-[#2C2C2C] flex flex-col justify-between overflow-hidden select-none">
+            <!-- Top Display Area matching uploaded image -->
+            <div class="relative w-full h-[30dvh] min-h-[175px] max-h-[260px] px-5 pt-3 pb-2 flex flex-col justify-between shrink-0">
+              <!-- Subtle top bar with menu button to access other calculators -->
+              <div class="flex items-center justify-between">
+                <button type="button" onclick="appAct.toggleDrawer(true)" aria-label="Open All Calculators Menu" class="w-9 h-9 rounded-full flex items-center justify-center text-[#757575] hover:bg-black/5 active:bg-black/10 transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <div class="flex items-center gap-1.5">
+                  ${state.citToolPanel === 'SCIENTIFIC' ? `
+                    <button type="button" onclick="window.appState.citRadMode=!window.appState.citRadMode;window.rerenderApp()" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#EAECE9] text-[#3A8918]">
+                      ${state.citRadMode ? 'RAD' : 'DEG'}
+                    </button>
+                  ` : ''}
+                  <button type="button" onclick="appAct.nav('gst')" class="px-2.5 py-1 rounded-full text-xs font-medium text-[#757575] hover:bg-black/5">GST</button>
+                </div>
               </div>
-              <div class="flex items-center gap-1.5">
-                <button onclick="window.toggleCitizenEmi()" class="px-2.5 py-1 rounded-lg bg-[#347BCB] text-xs font-bold">${state.citizenSubMode === 'CITIZEN' ? 'Loan EMI' : 'Citizen Keypad'}</button>
-                <button onclick="appAct.nav('gst')" class="px-2.5 py-1 rounded-lg bg-white/10 text-xs font-bold">GST</button>
-                <button onclick="appAct.nav('history')" class="px-2.5 py-1 rounded-lg bg-white/10 text-xs font-bold">History</button>
-              </div>
-            </header>
 
-            ${state.citizenSubMode === 'CITIZEN' ? `
-              <main class="flex-1 w-full bg-[#15191D] flex flex-col justify-between p-1.5 gap-1.5 overflow-hidden min-h-0">
-                <!-- Taller LCD Green Box with Larger Font Size -->
-                <div class="shrink-0 lcd-panel rounded-xl px-4 py-3 h-[25dvh] min-h-[158px] max-h-[210px] flex flex-col justify-between">
-                  <div class="flex justify-between items-center text-xs sm:text-sm font-mono-num font-bold opacity-85 border-b border-black/20 pb-1.5">
-                    <span>CT-512N CITIZEN ${state.memoryValue ? '· M:' + formatNum(state.memoryValue) : ''} · GT: ${formatNum(state.grandTotal)}</span>
-                    <span class="truncate max-w-[200px] text-sm sm:text-base font-extrabold">${state.expression}</span>
-                  </div>
-                  <div class="font-mono-num font-extrabold text-5xl sm:text-6xl text-right my-auto py-1 leading-none truncate">${formatNum(numVal)}</div>
-                  <div class="flex justify-between items-center text-xs sm:text-sm font-mono-num font-semibold opacity-80 border-t border-black/20 pt-1.5">
-                    <span class="truncate">${state.settings.numberFormat === 'INDIA' ? toIndianWords(numVal) : toWesternWords(numVal)}</span>
-                    <span class="shrink-0 ml-2 font-bold">STEPS: ${String(state.stepsList.length).padStart(2, '0')}</span>
-                  </div>
+              <!-- Expression Display with Colored Operators & Vertical Green Cursor Bar -->
+              <div class="w-full text-right overflow-x-auto my-auto py-1">
+                <div class="inline-flex items-center justify-end font-normal tracking-tight text-4xl sm:text-5xl md:text-6xl leading-none break-all">
+                  ${renderColoredExpression(state.citExpr)}
+                  <span class="inline-block w-[2.5px] h-9 sm:h-12 bg-[#3A8918] ml-0.5 rounded-full cursor-bar"></span>
+                </div>
+              </div>
+
+              <!-- Live Preview Result in Grey -->
+              <div class="w-full text-right min-h-[2.25rem] flex items-center justify-end">
+                <span class="text-2xl sm:text-3xl font-normal text-[#858585] tracking-tight truncate">${livePreview || ''}</span>
+              </div>
+            </div>
+
+            <!-- Middle Toolbar Row (Clock / Ruler / Scientific / Green Backspace) + Thin Divider -->
+            <div class="w-full px-6 shrink-0">
+              <div class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-7 sm:gap-9">
+                  <!-- History Clock Icon -->
+                  <button type="button" onclick="appAct.citTogglePanel('HISTORY')" aria-label="Calculation History" class="p-1.5 rounded-full transition-colors ${state.citToolPanel === 'HISTORY' ? 'text-[#3A8918] bg-[#EAECE9]' : 'text-[#757575] hover:bg-black/5'}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 7v5l3 2"/></svg>
+                  </button>
+
+                  <!-- Unit Converter Ruler Icon -->
+                  <button type="button" onclick="appAct.citTogglePanel('RULER')" aria-label="Unit Converter" class="p-1.5 rounded-full transition-colors ${state.citToolPanel === 'RULER' ? 'text-[#3A8918] bg-[#EAECE9]' : 'text-[#757575] hover:bg-black/5'}">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="2"/><path stroke-linecap="round" d="M7 8v3M11 8v4M15 8v3M19 8v4"/></svg>
+                  </button>
+
+                  <!-- Scientific Calculator Icon (√π e=) -->
+                  <button type="button" onclick="appAct.citTogglePanel('SCIENTIFIC')" aria-label="Scientific Functions" class="p-1.5 rounded-full transition-colors ${state.citToolPanel === 'SCIENTIFIC' ? 'text-[#3A8918] bg-[#EAECE9]' : 'text-[#757575] hover:bg-black/5'}">
+                    <div class="w-6 h-6 rounded-[5px] border-[1.6px] border-current flex flex-col items-center justify-center text-[8px] font-bold leading-[8px] tracking-tighter">
+                      <span>√π</span>
+                      <span>e=</span>
+                    </div>
+                  </button>
                 </div>
 
-                <!-- Keypad with Compact 3-button row (h-10 shrink-0) + 5 flex-1 rows -->
-                <div class="flex-1 flex flex-col gap-1.5 min-h-0">
-                  <div class="h-10 sm:h-11 shrink-0 grid grid-cols-3 gap-1.5">
-                    <button onclick="appAct.shareText('${formatNum(numVal)}')" class="h-full w-full rounded-xl key-blue font-bold text-xs sm:text-sm">CHECK</button>
-                    <button onclick="appAct.del()" class="h-full w-full rounded-xl key-blue-sec font-bold text-xs sm:text-sm">CORRECT / DELETE</button>
-                    <button onclick="appAct.clear()" class="h-full w-full rounded-xl key-red font-bold text-xs sm:text-sm">CLEAR</button>
-                  </div>
-                  <div class="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
-                    <button onclick="appAct.mem('GT')" class="h-full w-full rounded-xl key-3d font-bold text-sm text-[#C5F4D5]">GT</button>
-                    <button onclick="appAct.sqrt()" class="h-full w-full rounded-xl key-3d font-bold text-sm">√X</button>
-                    <button onclick="appAct.mem('M+')" class="h-full w-full rounded-xl key-3d font-bold text-sm">M+</button>
-                    <button onclick="appAct.mem('M-')" class="h-full w-full rounded-xl key-3d font-bold text-sm">M-</button>
-                    <button onclick="appAct.mem('MR')" class="h-full w-full rounded-xl key-3d font-bold text-sm text-[#548DD7]">MR</button>
-                  </div>
-                  <div class="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
-                    <button onclick="appAct.digit('7')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">7</button>
-                    <button onclick="appAct.digit('8')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">8</button>
-                    <button onclick="appAct.digit('9')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">9</button>
-                    <button onclick="appAct.op('÷')" class="h-full w-full rounded-xl key-blue font-mono-num font-bold text-2xl">÷</button>
-                    <button onclick="appAct.op('MU')" class="h-full w-full rounded-xl key-3d font-bold text-sm">MU</button>
-                  </div>
-                  <div class="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
-                    <button onclick="appAct.digit('4')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">4</button>
-                    <button onclick="appAct.digit('5')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">5</button>
-                    <button onclick="appAct.digit('6')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">6</button>
-                    <button onclick="appAct.op('×')" class="h-full w-full rounded-xl key-blue font-mono-num font-bold text-2xl">×</button>
-                    <button onclick="appAct.percent()" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl">%</button>
-                  </div>
-                  <div class="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
-                    <button onclick="appAct.digit('1')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">1</button>
-                    <button onclick="appAct.digit('2')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">2</button>
-                    <button onclick="appAct.digit('3')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">3</button>
-                    <button onclick="appAct.op('−')" class="h-full w-full rounded-xl key-blue font-mono-num font-bold text-2xl">−</button>
-                    <button onclick="appAct.mem('MC')" class="h-full w-full rounded-xl key-3d font-bold text-xs text-[#C5F4D5]">MC</button>
-                  </div>
-                  <div class="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
-                    <button onclick="appAct.digit('0')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">0</button>
-                    <button onclick="appAct.digit('00')" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-xl sm:text-2xl">00</button>
-                    <button onclick="appAct.decimal()" class="h-full w-full rounded-xl key-3d font-mono-num font-bold text-2xl">.</button>
-                    <button onclick="appAct.op('+')" class="h-full w-full rounded-xl key-blue font-mono-num font-bold text-2xl">+</button>
-                    <button onclick="appAct.equals()" class="h-full w-full rounded-xl key-equal font-mono-num font-bold text-2xl">=</button>
-                  </div>
+                <!-- Green Backspace Icon on Right -->
+                <button type="button" onclick="appAct.citBackspace()" aria-label="Backspace" class="p-1.5 rounded-full text-[#3A8918] hover:bg-[#EAECE9]/60 active:scale-95 transition-all">
+                  <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 6H9l-6 6 6 6h12a2 2 0 002-2V8a2 2 0 00-2-2zM16 9l-6 6M10 9l6 6"/></svg>
+                </button>
+              </div>
+              <div class="w-full h-[1px] bg-[#E6E8E5]"></div>
+            </div>
+
+            <!-- Scientific Function Row when toggled -->
+            ${state.citToolPanel === 'SCIENTIFIC' ? `
+              <div class="w-full px-5 pt-2 pb-1 grid grid-cols-6 gap-1.5 shrink-0 bg-[#FAFBF9]">
+                ${['sin', 'cos', 'tan', 'ln', 'log', '√', 'x²', 'xʸ', 'π', 'e', '(', ')'].map(fn => `
+                  <button type="button" onclick="appAct.citSci('${fn}')" class="h-8 rounded-full bg-[#EAECE9] text-[#3A8918] text-xs font-semibold active:bg-[#d8dcd6] transition-colors">${fn}</button>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            <!-- Main Content Area: Either History, Unit Converter, or 5x4 Circular Button Keypad -->
+            ${state.citToolPanel === 'HISTORY' ? `
+              <div class="flex-1 w-full px-5 py-3 flex flex-col justify-between overflow-hidden min-h-0">
+                <div class="flex-1 overflow-y-auto space-y-2 pr-1">
+                  ${state.history.length === 0 ? `
+                    <div class="h-full flex items-center justify-center text-sm text-[#858585]">No calculation history yet</div>
+                  ` : state.history.map(item => `
+                    <button type="button" onclick="window.appState.citExpr='${String(item.finalAmount)}';window.appState.citToolPanel='NONE';window.rerenderApp()" class="w-full text-right p-3 rounded-2xl bg-[#F4F5F3] hover:bg-[#EAECE9] transition-colors block">
+                      <div class="text-sm text-[#858585]">${item.expression}</div>
+                      <div class="text-xl font-semibold text-[#3A8918]">= ${item.finalAmount}</div>
+                    </button>
+                  `).join('')}
                 </div>
-              </main>
-            ` : `
-              <main class="flex-1 w-full bg-[#15191D] p-3 overflow-y-auto flex items-center justify-center">
-                <div class="w-full max-w-lg bg-white rounded-2xl p-5 shadow-lg border border-[#E9E9EC] space-y-3">
-                  <h2 class="font-bold text-base text-[#10232B]">Loan EMI Calculator</h2>
-                  <div>
-                    <label class="block text-xs font-bold text-neutral-600 mb-1">Loan Amount (${state.settings.currencySymbol})</label>
-                    <input type="number" value="${state.emiLoan}" oninput="window.appState.emiLoan=this.value" class="w-full px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
+                <div class="pt-2 flex justify-between items-center gap-3 shrink-0">
+                  <button type="button" onclick="appAct.clearHistory()" class="flex-1 py-2.5 rounded-full bg-[#EAECE9] text-[#2C2C2C] text-sm font-medium">Clear History</button>
+                  <button type="button" onclick="appAct.citTogglePanel('NONE')" class="flex-1 py-2.5 rounded-full bg-[#429619] text-white text-sm font-medium">Back to Keypad</button>
+                </div>
+              </div>
+            ` : state.citToolPanel === 'RULER' ? `
+              <div class="flex-1 w-full px-5 py-3 flex flex-col justify-between overflow-y-auto min-h-0">
+                <div class="space-y-3">
+                  <div class="flex gap-1.5 overflow-x-auto pb-1">
+                    ${Object.keys(UNIT_CATEGORIES).map(cat => `
+                      <button type="button" onclick="window.setUnitCategory('${cat}')" class="px-3.5 py-1.5 rounded-full text-xs font-semibold shrink-0 transition-colors ${state.unitCategory === cat ? 'bg-[#429619] text-white' : 'bg-[#EAECE9] text-[#2C2C2C]'}">${UNIT_CATEGORIES[cat].label}</button>
+                    `).join('')}
                   </div>
-                  <div>
-                    <label class="block text-xs font-bold text-neutral-600 mb-1">Annual Interest Rate (%)</label>
-                    <input type="number" step="0.1" value="${state.emiRate}" oninput="window.appState.emiRate=this.value" class="w-full px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-bold text-neutral-600 mb-1">Loan Tenure (${state.emiUnit})</label>
-                    <div class="flex gap-2">
-                      <input type="number" value="${state.emiTenure}" oninput="window.appState.emiTenure=this.value" class="flex-1 px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
-                      <button onclick="window.appState.emiUnit=window.appState.emiUnit==='YEARS'?'MONTHS':'YEARS';appAct.calcEmi()" class="px-4 py-2 rounded-xl bg-[#10232B] text-white text-xs font-bold">${state.emiUnit}</button>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-3.5 rounded-2xl bg-[#F4F5F3] space-y-2">
+                      <label class="text-xs text-[#858585] block">From Unit</label>
+                      <select onchange="window.appState.unitFrom=this.value;window.rerenderApp()" class="w-full bg-white px-3 py-2 rounded-xl text-sm font-medium border border-[#E6E8E5]">
+                        ${unitList.map(u => `<option value="${u.code}" ${u.code === state.unitFrom ? 'selected' : ''}>${u.name}</option>`).join('')}
+                      </select>
+                      <input type="number" value="${state.unitInput}" oninput="window.appState.unitInput=this.value;window.rerenderApp()" class="w-full bg-white px-3 py-2 rounded-xl text-xl font-semibold border border-[#E6E8E5]" />
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-[#F4F5F3] space-y-2">
+                      <label class="text-xs text-[#858585] block">To Unit</label>
+                      <select onchange="window.appState.unitTo=this.value;window.rerenderApp()" class="w-full bg-white px-3 py-2 rounded-xl text-sm font-medium border border-[#E6E8E5]">
+                        ${unitList.map(u => `<option value="${u.code}" ${u.code === state.unitTo ? 'selected' : ''}>${u.name}</option>`).join('')}
+                      </select>
+                      <div class="w-full bg-white px-3 py-2 rounded-xl text-xl font-bold text-[#3A8918] border border-[#E6E8E5]">${convertedUnit}</div>
                     </div>
                   </div>
-                  <button onclick="appAct.calcEmi()" class="w-full py-2.5 rounded-xl bg-[#347BCB] text-white font-bold text-sm">Calculate EMI</button>
-                  <div class="p-3 rounded-xl lcd-panel">
-                    <div class="text-xs font-mono-num font-bold">Monthly EMI (${e.months} Months)</div>
-                    <div class="font-mono-num font-bold text-2xl mt-0.5">₹${formatNum(e.monthlyEmi)}</div>
-                  </div>
-                  <div class="space-y-1.5 text-xs">
-                    <div class="flex justify-between p-2 rounded-xl bg-[#F7F2FA]"><span>Principal Amount</span><span class="font-mono-num font-bold">₹${formatNum(e.principal)}</span></div>
-                    <div class="flex justify-between p-2 rounded-xl bg-[#F2FFF7]"><span>Total Interest</span><span class="font-mono-num font-bold text-[#D83B29]">₹${formatNum(e.totalInterest)}</span></div>
-                    <div class="flex justify-between p-2.5 rounded-xl bg-[#10232B] text-white"><span>Total Payment</span><span class="font-mono-num font-bold text-[#C5F4D5]">₹${formatNum(e.totalPayment)}</span></div>
-                  </div>
                 </div>
-              </main>
+                <button type="button" onclick="appAct.citTogglePanel('NONE')" class="w-full py-2.5 rounded-full bg-[#429619] text-white text-sm font-medium mt-3">Back to Calculator</button>
+              </div>
+            ` : `
+              <!-- 5x4 Circular Button Grid matching uploaded reference screenshot -->
+              <div class="flex-1 w-full px-5 py-3 grid grid-cols-4 grid-rows-5 gap-2.5 sm:gap-3.5 items-center justify-items-center min-h-0">
+                <!-- Row 1: C, (), %, ÷ -->
+                <button type="button" onclick="appAct.citClear()" class="w-full h-full max-h-[82px] rounded-full bg-[#EAECE9] active:bg-[#dadcd9] text-[#D93829] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">C</button>
+                <button type="button" onclick="appAct.citBrackets()" class="w-full h-full max-h-[82px] rounded-full bg-[#EAECE9] active:bg-[#dadcd9] text-[#3A8918] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">( )</button>
+                <button type="button" onclick="appAct.citPercent()" class="w-full h-full max-h-[82px] rounded-full bg-[#EAECE9] active:bg-[#dadcd9] text-[#3A8918] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">%</button>
+                <button type="button" onclick="appAct.citOp('÷')" class="w-full h-full max-h-[82px] rounded-full bg-[#EAECE9] active:bg-[#dadcd9] text-[#3A8918] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-colors">÷</button>
+
+                <!-- Row 2: 7, 8, 9, × -->
+                <button type="button" onclick="appAct.citDigit('7')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">7</button>
+                <button type="button" onclick="appAct.citDigit('8')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">8</button>
+                <button type="button" onclick="appAct.citDigit('9')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">9</button>
+                <button type="button" onclick="appAct.citOp('×')" class="w-full h-full max-h-[82px] rounded-full bg-[#EAECE9] active:bg-[#dadcd9] text-[#3A8918] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-colors">×</button>
+
+                <!-- Row 3: 4, 5, 6, − -->
+                <button type="button" onclick="appAct.citDigit('4')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">4</button>
+                <button type="button" onclick="appAct.citDigit('5')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">5</button>
+                <button type="button" onclick="appAct.citDigit('6')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">6</button>
+                <button type="button" onclick="appAct.citOp('−')" class="w-full h-full max-h-[82px] rounded-full bg-[#EAECE9] active:bg-[#dadcd9] text-[#3A8918] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-colors">−</button>
+
+                <!-- Row 4: 1, 2, 3, + -->
+                <button type="button" onclick="appAct.citDigit('1')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">1</button>
+                <button type="button" onclick="appAct.citDigit('2')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">2</button>
+                <button type="button" onclick="appAct.citDigit('3')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">3</button>
+                <button type="button" onclick="appAct.citOp('+')" class="w-full h-full max-h-[82px] rounded-full bg-[#EAECE9] active:bg-[#dadcd9] text-[#3A8918] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-colors">+</button>
+
+                <!-- Row 5: +/−, 0, ., = -->
+                <button type="button" onclick="appAct.citPlusMinus()" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-xl sm:text-2xl font-normal flex items-center justify-center transition-colors">+/−</button>
+                <button type="button" onclick="appAct.citDigit('0')" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-colors">0</button>
+                <button type="button" onclick="appAct.citDecimal()" class="w-full h-full max-h-[82px] rounded-full bg-[#F4F5F3] active:bg-[#e4e6e2] text-[#2C2C2C] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-colors">.</button>
+                <button type="button" onclick="appAct.citEquals()" class="w-full h-full max-h-[82px] rounded-full bg-[#429619] active:bg-[#367d13] text-white text-3xl sm:text-4xl font-normal flex items-center justify-center shadow-sm transition-colors">=</button>
+              </div>
             `}
           </div>
         `;
@@ -787,6 +1044,7 @@
         `;
       }
 
+      // Full-screen Currency Converter (no max-w restriction)
       function renderCurrencyScreen() {
         const fromMeta = POPULAR_CURRENCIES.find(c => c.code === state.fxFrom) || POPULAR_CURRENCIES[0];
         const toMeta = POPULAR_CURRENCIES.find(c => c.code === state.fxTo) || POPULAR_CURRENCIES[1];
@@ -802,7 +1060,7 @@
               </div>
               <button onclick="appAct.nav('currency')" class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-bold">↻ Refresh</button>
             </header>
-            <main class="flex-1 w-full max-w-5xl mx-auto p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <main class="flex-1 w-full p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
               <div class="lg:col-span-5 bg-white rounded-2xl p-5 shadow-xl border border-[#E9E9EC] space-y-3">
                 <div class="text-xs font-bold text-neutral-500">From Currency</div>
                 <div class="flex items-center justify-between p-3 rounded-xl bg-[#F7F2FA] border border-[#E9E9EC]">
@@ -870,6 +1128,7 @@
         `;
       }
 
+      // Full-screen History Screen
       function renderHistoryScreen() {
         const sym = state.settings.currencySymbol;
         return `
@@ -883,7 +1142,7 @@
                 <button type="button" onclick="appAct.clearHistory()" class="px-3 py-1.5 rounded-lg bg-white/15 text-xs font-bold">🗑 Clear All</button>
               </div>
             </header>
-            <main class="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-5 space-y-3">
+            <main class="flex-1 w-full p-3 sm:p-5 space-y-3">
               ${state.history.length === 0 ? `
                 <div class="bg-white rounded-2xl p-10 text-center border border-[#E9E9EC] space-y-3">
                   <div class="font-bold text-[#10232B]">No Calculation History Yet</div>
@@ -915,6 +1174,7 @@
         `;
       }
 
+      // Full-screen Age Calculator
       function renderAgeScreen() {
         const d = parseInt(state.dobDay, 10) || 15;
         const m = parseInt(state.dobMonth, 10) || 8;
@@ -944,7 +1204,7 @@
               </div>
               <button onclick="appAct.shareText('Age: ${years} Years, ${months} Months, ${days} Days')" class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-bold">Share</button>
             </header>
-            <main class="flex-1 w-full max-w-3xl mx-auto p-4 space-y-4">
+            <main class="flex-1 w-full p-4 space-y-4">
               <div class="bg-white rounded-2xl p-5 shadow-lg border border-[#E9E9EC] space-y-4">
                 <h3 class="font-bold text-base">Enter Birth Date</h3>
                 <div class="grid grid-cols-3 gap-3">
@@ -975,6 +1235,7 @@
         `;
       }
 
+      // Full-screen Banknote Counter
       function renderBanknoteScreen() {
         let notesCount = 0, grandTotal = 0;
         INDIAN_DENOMINATIONS.forEach(d => {
@@ -991,7 +1252,7 @@
               </div>
               <button onclick="window.resetCash()" class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-bold">↻ Reset</button>
             </header>
-            <main class="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-5 space-y-4">
+            <main class="flex-1 w-full p-3 sm:p-5 space-y-4">
               <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xl border border-[#E9E9EC] space-y-3">
                 <div class="flex justify-between items-center border-b border-[#E9E9EC] pb-2.5">
                   <span class="text-xs font-bold text-[#10232B]">Display Format</span>
@@ -1049,6 +1310,7 @@
         `;
       }
 
+      // Full-screen Settings / About Screen
       function renderSettingsOrAbout() {
         return `
           <div class="h-[100dvh] w-full overflow-y-auto bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
@@ -1058,10 +1320,10 @@
                 <h1 class="text-lg font-bold">${state.screen === 'settings' ? 'Settings' : 'About Application'}</h1>
               </div>
             </header>
-            <main class="flex-1 w-full max-w-3xl mx-auto p-4 space-y-4">
+            <main class="flex-1 w-full p-4 space-y-4">
               <div class="bg-white rounded-2xl p-5 shadow-md border border-[#E9E9EC] space-y-3">
                 <h2 class="font-bold text-base text-[#10232B]">All-in-One Citizen &amp; GST Calculator</h2>
-                <p class="text-xs text-neutral-600">Includes Citizen Calculator with Loan EMI, GST Rates Calculator, Currency Converter, Calculation History, Age Calculator, and Banknote Cash Counter.</p>
+                <p class="text-xs text-neutral-600">Includes Modern Circular Citizen Calculator with Scientific &amp; Unit Converter, GST Rates Calculator, Currency Converter, Calculation History, Age Calculator, and Banknote Cash Counter.</p>
                 <div class="flex gap-2 pt-2">
                   <button onclick="window.appState.settings.numberFormat='INDIA';window.rerenderApp()" class="px-4 py-2 rounded-xl text-xs font-bold ${state.settings.numberFormat==='INDIA'?'bg-[#347BCB] text-white':'bg-neutral-100'}">India Format (Lakh/Crore)</button>
                   <button onclick="window.appState.settings.numberFormat='WESTERN';window.rerenderApp()" class="px-4 py-2 rounded-xl text-xs font-bold ${state.settings.numberFormat==='WESTERN'?'bg-[#347BCB] text-white':'bg-neutral-100'}">Western Format (Million)</button>
@@ -1073,8 +1335,11 @@
       }
 
       window.rerenderApp = render;
-      window.toggleCitizenEmi = function () {
-        state.citizenSubMode = state.citizenSubMode === 'CITIZEN' ? 'EMI' : 'CITIZEN';
+      window.setUnitCategory = function (cat) {
+        state.unitCategory = cat;
+        const list = UNIT_CATEGORIES[cat].units;
+        state.unitFrom = list[0].code;
+        state.unitTo = (list[1] || list[0]).code;
         render();
       };
       window.updateFxFrom = function (val) { state.fxFrom = val; fetchLiveFx(val); };

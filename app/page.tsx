@@ -104,7 +104,9 @@ export default function AllInOneCalculatorApp() {
         {activeScreen === 'citizen' && (
           <CitizenCalculatorScreen
             settings={settings}
+            history={history}
             onAddHistory={handleAddHistory}
+            onClearHistory={handleClearAllHistory}
             onOpenDrawer={() => setIsDrawerOpen(true)}
             onOpenHistory={() => handleNavigate('history')}
           />

@@ -65,7 +65,7 @@ export function SettingsScreen({
         )}
       </header>
 
-      <main className="flex-1 w-full max-w-3xl mx-auto p-4 sm:p-6 space-y-4">
+      <main className="flex-1 w-full p-4 sm:p-6 space-y-4">
         {/* Numbering System & Currency Symbol */}
         <div className="bg-white rounded-2xl p-5 shadow-md border border-[#E9E9EC] space-y-4">
           <h2 className="text-base font-bold text-[#10232B] border-b border-[#E9E9EC] pb-2.5">
@@ -314,7 +314,7 @@ export function AboutScreen({ onOpenDrawer, onSelectScreen }: AboutScreenProps) 
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-4xl mx-auto p-4 sm:p-6 space-y-4">
+      <main className="flex-1 w-full p-4 sm:p-6 space-y-4">
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-[#E9E9EC]">
           <div className="flex items-center gap-4 border-b border-[#E9E9EC] pb-4 mb-4">
             <div className="w-14 h-14 rounded-2xl bg-[#A6B991] text-[#101010] border-2 border-[#8d9f78] flex items-center justify-center font-mono font-extrabold text-2xl shadow-inner">

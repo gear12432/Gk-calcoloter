@@ -247,8 +247,8 @@ export default function BanknoteCounterScreen({
         </div>
       )}
 
-      {/* Main Content */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-3 py-3.5 sm:px-5 sm:py-5 space-y-4">
+      {/* Main Content - Full Width & Full Height */}
+      <main className="flex-1 w-full px-3 py-3 sm:px-5 sm:py-4 space-y-3.5">
         {/* TOP LARGE PREMIUM WHITE SUMMARY CARD */}
         <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xl border border-[#E9E9EC] space-y-3.5">
           {/* Format Selector Row: India (Thousand, Lakh, Crore) vs Western (Thousand, Million, Billion) */}
