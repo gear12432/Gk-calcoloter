@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Citizen &amp; GST All-in-One Calculator</title>
+  <meta name="description" content="Complete professional All-in-One Calculator featuring GST Rates Calculator, Live Currency Converter, Citizen Calculator with Loan EMI, Calculation History, Age Calculator, and Banknote Cash Counter." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg-mint: #F2FFF7;
+      --navy: #10232B;
+      --charcoal: #15191D;
+      --lcd: #A6B991;
+      --lcd-text: #101010;
+      --btn-blue: #347BCB;
+      --btn-blue-sec: #548DD7;
+      --btn-clear: #D83B29;
+      --btn-equal: #E3452E;
+      --key-dark: #25252D;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, #E9FFF0 0%, #F2FFF7 50%, #B9EFCB 100%);
+      color: #171717;
+      min-height: 100vh;
+    }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+    .key-3d {
+      background-color: #25252D;
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 #0a0c0e;
+      transition: transform 0.08s ease, background-color 0.12s ease;
+    }
+    .key-3d:active { transform: translateY(2px); box-shadow: 0 2px 0 #0a0c0e; }
+    .key-blue {
+      background-color: #347BCB;
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 #1b4677;
+    }
+    .key-blue:active { transform: translateY(2px); box-shadow: 0 2px 0 #1b4677; }
+    .key-blue-sec {
+      background-color: #548DD7;
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 #2b5791;
+    }
+    .key-blue-sec:active { transform: translateY(2px); }
+    .key-red {
+      background-color: #D83B29;
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 #801e13;
+    }
+    .key-red:active { transform: translateY(2px); }
+    .key-equal {
+      background-color: #E3452E;
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 #821f11;
+    }
+    .key-equal:active { transform: translateY(2px); }
+    .lcd-panel {
+      background-color: #A6B991;
+      color: #101010;
+      border: 2px solid #8d9f78;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.18);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <div id="app-root" class="min-h-screen flex flex-col w-full"></div>
+
+  <script>
+    (function () {
+      const POPULAR_CURRENCIES = [
+        { code: 'USD', name: 'U.S. Dollar', symbol: '$', country: 'United States', flag: '🇺🇸' },
+        { code: 'INR', name: 'Indian Rupee', symbol: '₹', country: 'India', flag: '🇮🇳' },
+        { code: 'EUR', name: 'Euro', symbol: '€', country: 'European Union', flag: '🇪🇺' },
+        { code: 'GBP', name: 'British Pound', symbol: '£', country: 'United Kingdom', flag: '🇬🇧' },
+        { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ', country: 'United Arab Emirates', flag: '🇦🇪' },
+        { code: 'SAR', name: 'Saudi Riyal', symbol: '﷼', country: 'Saudi Arabia', flag: '🇸🇦' },
+        { code: 'BDT', name: 'Bangladeshi Taka', symbol: '৳', country: 'Bangladesh', flag: '🇧🇩' },
+        { code: 'PKR', name: 'Pakistani Rupee', symbol: '₨', country: 'Pakistan', flag: '🇵🇰' },
+        { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$', country: 'Canada', flag: '🇨🇦' },
+        { code: 'AUD', name: 'Australian Dollar', symbol: 'A$', country: 'Australia', flag: '🇦🇺' },
+        { code: 'JPY', name: 'Japanese Yen', symbol: '¥', country: 'Japan', flag: '🇯🇵' },
+        { code: 'CHF', name: 'Swiss Franc', symbol: 'CHF', country: 'Switzerland', flag: '🇨🇭' },
+        { code: 'KRW', name: 'Korean Won', symbol: '₩', country: 'South Korea', flag: '🇰🇷' },
+        { code: 'KWD', name: 'Kuwaiti Dinar', symbol: 'د.ك', country: 'Kuwait', flag: '🇰🇼' }
+      ];
+
+      const INDIAN_DENOMINATIONS = [500, 200, 100, 50, 20, 10, 5, 2, 1];
+      const HISTORY_KEY = 'all_in_one_calc_history_v1';
+      const SETTINGS_KEY = 'all_in_one_calc_settings_v1';
+
+      const state = {
+        screen: 'gst',
+        prevScreen: 'gst',
+        drawerOpen: false,
+        settings: {
+          numberFormat: 'INDIA',
+          currencySymbol: '₹',
+          gstRates: [5, 10, 15, 20, 25],
+          soundEnabled: true,
+          decimalPlaces: 2
+        },
+        history: [
+          {
+            id: 'sample-1',
+            timestamp: '2025-02-15T10:30:00.000Z',
+            type: 'GST',
+            expression: '10000 + 18% GST',
+            originalAmount: 10000,
+            gstRate: 18,
+            gstAmount: 1800,
+            cgstAmount: 900,
+            sgstAmount: 900,
+            igstAmount: 1800,
+            finalAmount: 11800
+          },
+          {
+            id: 'sample-2',
+            timestamp: '2025-02-15T09:15:00.000Z',
+            type: 'GST',
+            expression: '25000 + 15% GST',
+            originalAmount: 25000,
+            gstRate: 15,
+            gstAmount: 3750,
+            cgstAmount: 1875,
+            sgstAmount: 1875,
+            igstAmount: 3750,
+            finalAmount: 28750
+          }
+        ],
+        selectedHistoryIds: [],
+        // GST & Citizen Calc state
+        displayValue: '10000',
+        expression: '10000 + 18% GST',
+        pendingOp: null,
+        storedValue: null,
+        waitingForOperand: true,
+        memoryValue: 0,
+        grandTotal: 11800,
+        stepsList: ['10,000 (+18% GST) → 11,800'],
+        gstResult: {
+          originalAmount: 10000,
+          gstRate: 18,
+          gstAmount: 1800,
+          cgstAmount: 900,
+          sgstAmount: 900,
+          igstAmount: 1800,
+          finalAmount: 11800
+        },
+        changeGstModal: false,
+        checkModal: false,
+        // Citizen / EMI sub-mode
+        citizenSubMode: 'CITIZEN',
+        emiLoan: '500000',
+        emiRate: '8.5',
+        emiTenure: '5',
+        emiUnit: 'YEARS',
+        emiResult: { monthlyEmi: 10258.27, principal: 500000, totalInterest: 115495.98, totalPayment: 615495.98, months: 60 },
+        // Currency Converter state
+        fxFrom: 'USD',
+        fxTo: 'INR',
+        fxAmount: '100',
+        fxSearch: '',
+        fxRates: { USD: 1, INR: 86.45, EUR: 0.95, GBP: 0.79, AED: 3.6725, SAR: 3.75, BDT: 121.5, PKR: 278.8, CAD: 1.42, AUD: 1.57, JPY: 151.8, CHF: 0.90, KRW: 1442.0, KWD: 0.308 },
+        fxLastUpdated: 'Live Exchange Rate Feed',
+        fxLoading: false,
+        // Age Calculator state
+        dobDay: '15',
+        dobMonth: '08',
+        dobYear: '1998',
+        // Banknote Counter state
+        cashFormat: 'INDIA',
+        cashQty: { 500: '10', 200: '5', 100: '10', 50: '', 20: '', 10: '', 5: '', 2: '', 1: '' },
+        toast: null
+      };
+
+      try {
+        const savedH = localStorage.getItem(HISTORY_KEY);
+        if (savedH) state.history = JSON.parse(savedH);
+        const savedS = localStorage.getItem(SETTINGS_KEY);
+        if (savedS) state.settings = Object.assign({}, state.settings, JSON.parse(savedS));
+      } catch (e) {}
+
+      function persist() {
+        try {
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(state.history));
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(state.settings));
+        } catch (e) {}
+      }
+
+      function showToast(msg) {
+        state.toast = msg;
+        render();
+        setTimeout(() => { state.toast = null; render(); }, 2000);
+      }
+
+      function formatNum(val, fmt, maxDec) {
+        const n = Number(val);
+        if (!Number.isFinite(n)) return '0';
+        const locale = (fmt || state.settings.numberFormat) === 'INDIA' ? 'en-IN' : 'en-US';
+        const dec = maxDec !== undefined ? maxDec : state.settings.decimalPlaces;
+        return new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: dec }).format(n);
+      }
+
+      const ONES = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      const TENS = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+      function twoDigits(n) {
+        if (n === 0) return '';
+        if (n < 20) return ONES[n];
+        return TENS[Math.floor(n / 10)] + (n % 10 ? ' ' + ONES[n % 10] : '');
+      }
+      function threeDigits(n) {
+        if (n === 0) return '';
+        const h = Math.floor(n / 100);
+        const r = n % 100;
+        const hp = h > 0 ? ONES[h] + ' Hundred' : '';
+        const rp = twoDigits(r);
+        return hp && rp ? hp + ' ' + rp : (hp || rp);
+      }
+      function toIndianWords(amount) {
+        const abs = Math.floor(Math.abs(Number(amount) || 0));
+        if (abs === 0) return 'Zero Rupees Only';
+        const parts = [];
+        let rem = abs;
+        const crore = Math.floor(rem / 10000000); rem %= 10000000;
+        if (crore > 0) parts.push(threeDigits(crore) + ' Crore');
+        const lakh = Math.floor(rem / 100000); rem %= 100000;
+        if (lakh > 0) parts.push(twoDigits(lakh) + ' Lakh');
+        const thousand = Math.floor(rem / 1000); rem %= 1000;
+        if (thousand > 0) parts.push(twoDigits(thousand) + ' Thousand');
+        if (rem > 0) parts.push(threeDigits(rem));
+        return parts.join(' ') + ' Rupees Only';
+      }
+      function toWesternWords(amount) {
+        const abs = Math.floor(Math.abs(Number(amount) || 0));
+        if (abs === 0) return 'Zero Only';
+        const scales = ['', 'Thousand', 'Million', 'Billion'];
+        const parts = [];
+        let rem = abs, idx = 0;
+        while (rem > 0 && idx < scales.length) {
+          const chunk = rem % 1000;
+          if (chunk > 0) parts.unshift(threeDigits(chunk) + (scales[idx] ? ' ' + scales[idx] : ''));
+          rem = Math.floor(rem / 1000);
+          idx++;
+        }
+        return parts.join(' ') + ' Only';
+      }
+
+      function fetchLiveFx(base) {
+        state.fxLoading = true;
+        render();
+        fetch('https://open.er-api.com/v6/latest/' + encodeURIComponent(base))
+          .then(r => r.json())
+          .then(data => {
+            if (data && data.rates) {
+              state.fxRates = data.rates;
+              state.fxLastUpdated = data.time_last_update_utc ? new Date(data.time_last_update_utc).toLocaleString() : new Date().toLocaleString();
+            }
+          })
+          .catch(() => {})
+          .finally(() => {
+            state.fxLoading = false;
+            render();
+          });
+      }
+
+      fetchLiveFx(state.fxFrom);
+
+      function addHistory(rec) {
+        state.history.unshift(Object.assign({
+          id: 'calc-' + Date.now(),
+          timestamp: new Date().toISOString()
+        }, rec));
+        persist();
+      }
+
+      // Calculator Actions
+      window.appAct = {
+        nav: function (scr) {
+          state.prevScreen = state.screen;
+          state.screen = scr;
+          state.drawerOpen = false;
+          if (scr === 'currency') fetchLiveFx(state.fxFrom);
+          render();
+        },
+        toggleDrawer: function (open) {
+          state.drawerOpen = open !== undefined ? open : !state.drawerOpen;
+          render();
+        },
+        digit: function (d) {
+          state.gstResult = null;
+          if (state.waitingForOperand) {
+            state.displayValue = d === '00' ? '0' : d;
+            state.expression = state.pendingOp ? (state.storedValue + ' ' + state.pendingOp + ' ' + state.displayValue) : state.displayValue;
+            state.waitingForOperand = false;
+          } else {
+            if (state.displayValue === '0') {
+              if (d === '0' || d === '00') return;
+              state.displayValue = d;
+            } else if (state.displayValue.length < 14) {
+              state.displayValue += d;
+            }
+            state.expression = state.pendingOp ? (state.storedValue + ' ' + state.pendingOp + ' ' + state.displayValue) : state.displayValue;
+          }
+          render();
+        },
+        decimal: function () {
+          state.gstResult = null;
+          if (state.waitingForOperand) {
+            state.displayValue = '0.';
+            state.waitingForOperand = false;
+          } else if (!state.displayValue.includes('.')) {
+            state.displayValue += '.';
+          }
+          render();
+        },
+        op: function (nextOp) {
+          state.gstResult = null;
+          const cur = parseFloat(state.displayValue) || 0;
+          if (state.storedValue === null) {
+            state.storedValue = cur;
+          } else if (state.pendingOp && !state.waitingForOperand) {
+            state.storedValue = computeOp(state.storedValue, cur, state.pendingOp);
+            state.displayValue = String(state.storedValue);
+          }
+          state.pendingOp = nextOp;
+          state.waitingForOperand = true;
+          state.expression = state.storedValue + ' ' + nextOp;
+          render();
+        },
+        equals: function () {
+          const cur = parseFloat(state.displayValue) || 0;
+          if (state.pendingOp && state.storedValue !== null) {
+            const res = Number(computeOp(state.storedValue, cur, state.pendingOp).toFixed(state.settings.decimalPlaces));
+            const expr = state.storedValue + ' ' + state.pendingOp + ' ' + cur;
+            state.displayValue = String(res);
+            state.expression = expr + ' = ' + res;
+            state.grandTotal = Number((state.grandTotal + res).toFixed(2));
+            state.stepsList.unshift(expr + ' = ' + formatNum(res));
+            addHistory({ type: 'CITIZEN', expression: expr, originalAmount: state.storedValue, finalAmount: res });
+            state.storedValue = null;
+            state.pendingOp = null;
+            state.waitingForOperand = true;
+            render();
+          }
+        },
+        percent: function () {
+          const cur = parseFloat(state.displayValue) || 0;
+          if (state.storedValue !== null && state.pendingOp) {
+            const pct = (state.storedValue * cur) / 100;
+            const res = state.pendingOp === '+' ? state.storedValue + pct : state.pendingOp === '−' ? state.storedValue - pct : pct;
+            state.displayValue = String(Number(res.toFixed(2)));
+            state.storedValue = null;
+            state.pendingOp = null;
+            state.waitingForOperand = true;
+          } else {
+            state.displayValue = String(cur / 100);
+            state.waitingForOperand = true;
+          }
+          render();
+        },
+        sqrt: function () {
+          const cur = parseFloat(state.displayValue) || 0;
+          if (cur >= 0) {
+            const res = Number(Math.sqrt(cur).toFixed(state.settings.decimalPlaces));
+            state.displayValue = String(res);
+            state.expression = '√(' + cur + ') = ' + res;
+            state.waitingForOperand = true;
+            render();
+          }
+        },
+        gst: function (rate) {
+          const base = (state.gstResult && state.waitingForOperand) ? state.gstResult.originalAmount : (parseFloat(state.displayValue) || 0);
+          if (base <= 0) return;
+          const abs = Math.abs(rate);
+          let orig = base, gstAmt = 0, finalAmt = 0;
+          if (rate > 0) {
+            gstAmt = (base * abs) / 100;
+            finalAmt = base + gstAmt;
+          } else {
+            orig = base / (1 + abs / 100);
+            gstAmt = base - orig;
+            finalAmt = base;
+          }
+          const cleanOrig = Number(orig.toFixed(2));
+          const cleanGst = Number(gstAmt.toFixed(2));
+          const cleanHalf = Number((gstAmt / 2).toFixed(2));
+          const cleanFinal = Number(finalAmt.toFixed(2));
+          state.gstResult = {
+            originalAmount: cleanOrig,
+            gstRate: rate,
+            gstAmount: cleanGst,
+            cgstAmount: cleanHalf,
+            sgstAmount: cleanHalf,
+            igstAmount: cleanGst,
+            finalAmount: cleanFinal
+          };
+          state.displayValue = String(rate > 0 ? cleanFinal : cleanOrig);
+          state.expression = base + ' ' + (rate > 0 ? '+' + abs : '-' + abs) + '% GST';
+          state.waitingForOperand = true;
+          state.stepsList.unshift(formatNum(base) + ' (' + (rate > 0 ? '+' : '-') + abs + '% GST) → ' + formatNum(rate > 0 ? cleanFinal : cleanOrig));
+          addHistory({
+            type: 'GST',
+            expression: state.expression,
+            originalAmount: cleanOrig,
+            gstRate: rate,
+            gstAmount: cleanGst,
+            cgstAmount: cleanHalf,
+            sgstAmount: cleanHalf,
+            igstAmount: cleanGst,
+            finalAmount: cleanFinal
+          });
+          render();
+        },
+        del: function () {
+          if (state.gstResult) {
+            state.displayValue = String(state.gstResult.originalAmount);
+            state.gstResult = null;
+            state.waitingForOperand = false;
+            render();
+            return;
+          }
+          if (!state.waitingForOperand) {
+            state.displayValue = state.displayValue.length > 1 ? state.displayValue.slice(0, -1) : '0';
+            state.expression = state.displayValue;
+            render();
+          }
+        },
+        clear: function () {
+          state.displayValue = '0';
+          state.expression = '0';
+          state.pendingOp = null;
+          state.storedValue = null;
+          state.waitingForOperand = false;
+          state.gstResult = null;
+          render();
+        },
+        mem: function (action) {
+          const cur = parseFloat(state.displayValue) || 0;
+          if (action === 'M+') state.memoryValue += cur;
+          else if (action === 'M-') state.memoryValue -= cur;
+          else if (action === 'MR') { state.displayValue = String(state.memoryValue); state.expression = 'MR = ' + state.memoryValue; }
+          else if (action === 'GT') { state.displayValue = String(state.grandTotal); state.expression = 'GT = ' + state.grandTotal; }
+          else if (action === 'MC') { state.memoryValue = 0; state.grandTotal = 0; }
+          state.waitingForOperand = true;
+          render();
+        },
+        setGstPreset: function (rates) {
+          state.settings.gstRates = rates;
+          state.changeGstModal = false;
+          persist();
+          render();
+        },
+        calcEmi: function () {
+          const P = parseFloat(state.emiLoan) || 0;
+          const R = parseFloat(state.emiRate) || 0;
+          const T = parseFloat(state.emiTenure) || 1;
+          const n = state.emiUnit === 'YEARS' ? Math.round(T * 12) : Math.round(T);
+          const r = R > 0 ? R / 12 / 100 : 0;
+          const emi = r === 0 ? P / n : (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+          const totalPayment = emi * n;
+          state.emiResult = {
+            monthlyEmi: Number(emi.toFixed(2)),
+            principal: P,
+            totalInterest: Number((totalPayment - P).toFixed(2)),
+            totalPayment: Number(totalPayment.toFixed(2)),
+            months: n
+          };
+          addHistory({
+            type: 'EMI',
+            expression: 'Loan ' + state.settings.currencySymbol + formatNum(P) + ' @ ' + R + '%',
+            originalAmount: P,
+            finalAmount: state.emiResult.monthlyEmi
+          });
+          render();
+        },
+        swapFx: function () {
+          const tmp = state.fxFrom;
+          state.fxFrom = state.fxTo;
+          state.fxTo = tmp;
+          fetchLiveFx(state.fxFrom);
+        },
+        saveCashHistory: function (notesCount, grandTotal, words) {
+          if (grandTotal <= 0) return showToast('Enter note quantities first');
+          addHistory({
+            type: 'CASH',
+            expression: notesCount + ' Notes Cash Count',
+            originalAmount: notesCount,
+            finalAmount: grandTotal,
+            note: words
+          });
+          showToast('Saved to Calculation History');
+        },
+        shareText: function (txt) {
+          if (navigator.share) {
+            navigator.share({ title: 'Calculator Result', text: txt }).catch(() => {});
+          } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(txt);
+            showToast('Copied to clipboard');
+          }
+        },
+        deleteHistory: function (id) {
+          state.history = state.history.filter(h => h.id !== id);
+          persist();
+          render();
+        },
+        clearHistory: function () {
+          state.history = [];
+          persist();
+          render();
+        }
+      };
+
+      function computeOp(a, b, op) {
+        if (op === '+') return a + b;
+        if (op === '−') return a - b;
+        if (op === '×') return a * b;
+        if (op === '÷') return b === 0 ? 0 : a / b;
+        if (op === 'MU') return b === 100 ? 0 : a / (1 - b / 100);
+        return b;
+      }
+
+      function renderDrawer() {
+        if (!state.drawerOpen) return '';
+        const items = [
+          { id: 'gst', label: 'GST Rates', sub: 'CGST, SGST, IGST & Slabs', icon: '±%' },
+          { id: 'currency', label: 'Currency Converter', sub: 'Live Global Exchange Rates', icon: '🌐' },
+          { id: 'citizen', label: 'Citizen Calculator', sub: 'GT, MU, Memory & Loan EMI', icon: '🧮' },
+          { id: 'history', label: 'History', sub: 'Saved Calculation Records (' + state.history.length + ')', icon: '🕒' },
+          { id: 'age', label: 'Age Calculator', sub: 'Exact Age & Next Birthday', icon: '📅' },
+          { id: 'banknote', label: 'Banknote Counter', sub: 'Money Cash & Words Total', icon: '💵' },
+          { id: 'settings', label: 'Settings', sub: 'GST Slabs & Number Format', icon: '⚙️' },
+          { id: 'about', label: 'About Application', sub: 'Features & Specifications', icon: 'ℹ️' }
+        ];
+        return `
+          <div class="fixed inset-0 z-50 flex">
+            <div class="fixed inset-0 bg-black/55" onclick="appAct.toggleDrawer(false)"></div>
+            <aside class="relative z-10 w-80 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto">
+              <div>
+                <div class="bg-[#10232B] text-white p-5 flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-[#A6B991] text-[#101010] flex items-center justify-center font-mono-num font-bold text-lg">±%</div>
+                    <div>
+                      <div class="font-bold text-base">All-in-One Calculator</div>
+                      <div class="text-xs text-[#C5F4D5]">Citizen · GST · Cash · FX</div>
+                    </div>
+                  </div>
+                  <button onclick="appAct.toggleDrawer(false)" class="w-9 h-9 rounded-lg bg-white/10 text-white font-bold">✕</button>
+                </div>
+                <nav class="p-3 space-y-1">
+                  ${items.map(it => `
+                    <button onclick="appAct.nav('${it.id}')" class="w-full flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-left transition-all ${state.screen === it.id ? 'bg-[#C5F4D5] text-[#10232B] font-bold' : 'text-[#171717] hover:bg-[#F2FFF7]'}">
+                      <span class="w-10 h-10 rounded-lg flex items-center justify-center ${state.screen === it.id ? 'bg-[#10232B] text-white' : 'bg-[#F2FFF7] border border-[#C5F4D5]'}">${it.icon}</span>
+                      <div>
+                        <div class="text-sm">${it.label}</div>
+                        <div class="text-xs text-neutral-500 font-normal">${it.sub}</div>
+                      </div>
+                    </button>
+                  `).join('')}
+                </nav>
+              </div>
+              <div class="p-4 bg-[#F2FFF7] border-t border-[#E9E9EC] text-xs text-[#10232B] flex justify-between">
+                <span>Citizen LCD Series</span>
+                <span>GitHub Pages Ready</span>
+              </div>
+            </aside>
+          </div>
+        `;
+      }
+
+      function renderGstScreen() {
+        const numVal = parseFloat(state.displayValue) || 0;
+        const g = state.gstResult;
+        const sym = state.settings.currencySymbol;
+        return `
+          <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+              <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
+              <h1 class="text-lg font-bold">GST Calculator</h1>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="appAct.gst(18)" class="px-2.5 py-1 rounded-md bg-[#347BCB] text-xs font-bold">+18% GST</button>
+              <button onclick="appAct.nav('history')" class="px-2.5 py-1 rounded-md bg-white/10 text-xs font-bold">History (${state.history.length})</button>
+            </div>
+          </header>
+          <main class="flex-1 w-full max-w-5xl mx-auto p-3 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+            <div class="lg:col-span-7 space-y-2.5">
+              <div class="bg-[#15191D] p-2.5 rounded-2xl shadow-lg">
+                <div class="lcd-panel rounded-xl p-3.5 min-h-[145px] flex flex-col justify-between">
+                  <div class="flex justify-between text-[11px] font-mono-num font-bold opacity-80 border-b border-black/15 pb-1">
+                    <span>CITIZEN LCD ${state.memoryValue ? '· M:' + formatNum(state.memoryValue) : ''} · GT:${formatNum(state.grandTotal)}</span>
+                    <span>${state.expression}</span>
+                  </div>
+                  <div class="my-1.5 text-right">
+                    <div class="font-mono-num font-bold text-3xl sm:text-4xl">${sym}${formatNum(numVal)}</div>
+                    <div class="text-[11px] opacity-75 truncate">${state.settings.numberFormat === 'INDIA' ? toIndianWords(numVal) : toWesternWords(numVal)}</div>
+                  </div>
+                  ${g ? `
+                    <div class="grid grid-cols-4 gap-1 pt-1.5 border-t border-black/20 text-[11px] font-mono-num">
+                      <div class="bg-black/5 rounded p-1"><div class="text-[10px] opacity-75">Net</div><div class="font-bold">${sym}${formatNum(g.originalAmount)}</div></div>
+                      <div class="bg-black/5 rounded p-1"><div class="text-[10px] opacity-75">CGST (${Math.abs(g.gstRate)/2}%)</div><div class="font-bold">${sym}${formatNum(g.cgstAmount)}</div></div>
+                      <div class="bg-black/5 rounded p-1"><div class="text-[10px] opacity-75">SGST (${Math.abs(g.gstRate)/2}%)</div><div class="font-bold">${sym}${formatNum(g.sgstAmount)}</div></div>
+                      <div class="bg-black/10 rounded p-1"><div class="text-[10px] opacity-80">Total</div><div class="font-bold">${sym}${formatNum(g.finalAmount)}</div></div>
+                    </div>
+                  ` : `<div class="text-[11px] font-mono-num opacity-70 pt-1 border-t border-black/15">Tap +GST% or -GST% below for instant CGST/SGST/IGST split</div>`}
+                </div>
+              </div>
+
+              <div class="grid grid-cols-4 gap-1.5">
+                <button onclick="appAct.shareText('${sym}' + '${formatNum(numVal)}')" class="h-11 rounded-xl key-blue font-bold text-xs">CHECK / SHARE</button>
+                <button onclick="appAct.del()" class="h-11 rounded-xl key-blue-sec font-bold text-xs">CORRECT / DEL</button>
+                <button onclick="appAct.setGstPreset(state.settings.gstRates[0]===5?[3,5,12,18,28]:[5,10,15,20,25])" class="h-11 rounded-xl key-blue font-bold text-[11px]">CHANGE GST %</button>
+                <button onclick="appAct.clear()" class="h-11 rounded-xl key-red font-bold text-xs">CLEAR (C)</button>
+              </div>
+
+              <div class="space-y-1.5">
+                <div class="grid grid-cols-5 gap-1.5">
+                  ${state.settings.gstRates.map(r => `<button onclick="appAct.gst(${r})" class="h-11 rounded-xl key-3d font-mono-num font-bold text-sm">+${r}%</button>`).join('')}
+                </div>
+                <div class="grid grid-cols-5 gap-1.5">
+                  ${state.settings.gstRates.map(r => `<button onclick="appAct.gst(-${r})" class="h-11 rounded-xl key-3d font-mono-num font-bold text-sm">-${r}%</button>`).join('')}
+                </div>
+              </div>
+
+              <div class="bg-[#15191D] p-2.5 rounded-2xl shadow-xl space-y-2">
+                <div class="grid grid-cols-5 gap-1.5">
+                  <button onclick="appAct.mem('GT')" class="h-11 rounded-xl key-3d font-bold text-sm text-[#C5F4D5]">GT</button>
+                  <button onclick="appAct.sqrt()" class="h-11 rounded-xl key-3d font-bold text-sm">√X</button>
+                  <button onclick="appAct.mem('M+')" class="h-11 rounded-xl key-3d font-bold text-sm">M+</button>
+                  <button onclick="appAct.mem('M-')" class="h-11 rounded-xl key-3d font-bold text-sm">M-</button>
+                  <button onclick="appAct.mem('MR')" class="h-11 rounded-xl key-3d font-bold text-sm text-[#548DD7]">MR</button>
+                </div>
+                <div class="grid grid-cols-5 gap-1.5">
+                  <button onclick="appAct.digit('7')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">7</button>
+                  <button onclick="appAct.digit('8')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">8</button>
+                  <button onclick="appAct.digit('9')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">9</button>
+                  <button onclick="appAct.op('÷')" class="h-13 py-3 rounded-xl key-blue font-mono-num font-bold text-2xl">÷</button>
+                  <button onclick="appAct.op('MU')" class="h-13 py-3 rounded-xl key-3d font-bold text-sm">MU</button>
+
+                  <button onclick="appAct.digit('4')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">4</button>
+                  <button onclick="appAct.digit('5')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">5</button>
+                  <button onclick="appAct.digit('6')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">6</button>
+                  <button onclick="appAct.op('×')" class="h-13 py-3 rounded-xl key-blue font-mono-num font-bold text-2xl">×</button>
+                  <button onclick="appAct.percent()" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">%</button>
+
+                  <button onclick="appAct.digit('1')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">1</button>
+                  <button onclick="appAct.digit('2')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">2</button>
+                  <button onclick="appAct.digit('3')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">3</button>
+                  <button onclick="appAct.op('−')" class="h-13 py-3 rounded-xl key-blue font-mono-num font-bold text-2xl">−</button>
+                  <button onclick="appAct.mem('MC')" class="h-13 py-3 rounded-xl key-3d font-bold text-xs text-[#C5F4D5]">MC</button>
+
+                  <button onclick="appAct.digit('0')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">0</button>
+                  <button onclick="appAct.digit('00')" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-xl">00</button>
+                  <button onclick="appAct.decimal()" class="h-13 py-3 rounded-xl key-3d font-mono-num font-bold text-2xl">.</button>
+                  <button onclick="appAct.op('+')" class="h-13 py-3 rounded-xl key-blue font-mono-num font-bold text-2xl">+</button>
+                  <button onclick="appAct.equals()" class="h-13 py-3 rounded-xl key-equal font-mono-num font-bold text-2xl">=</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-5 bg-white rounded-2xl p-4 shadow-md border border-[#E9E9EC] space-y-3">
+              <div class="border-b border-[#E9E9EC] pb-2.5 flex justify-between items-center">
+                <div>
+                  <h2 class="text-sm font-bold text-[#10232B]">GST Tax Breakdown Summary</h2>
+                  <p class="text-xs text-neutral-500">${g ? 'Rate: ' + g.gstRate + '% GST' : 'Standard 18% GST Preview'}</p>
+                </div>
+                <button onclick="appAct.setGstPreset([3,5,12,18,28])" class="px-2.5 py-1 rounded-lg bg-[#F2FFF7] border border-[#C5F4D5] text-xs font-bold text-[#10232B]">India Slabs</button>
+              </div>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between p-2.5 rounded-xl bg-[#F7F2FA]"><span>Original Amount</span><span class="font-mono-num font-bold">${sym}${formatNum(g ? g.originalAmount : numVal)}</span></div>
+                <div class="flex justify-between p-2.5 rounded-xl bg-[#F2FFF7]"><span>CGST (${g ? Math.abs(g.gstRate)/2 : 9}%)</span><span class="font-mono-num font-semibold">${sym}${formatNum(g ? g.cgstAmount : numVal*0.09)}</span></div>
+                <div class="flex justify-between p-2.5 rounded-xl bg-[#F2FFF7]"><span>SGST (${g ? Math.abs(g.gstRate)/2 : 9}%)</span><span class="font-mono-num font-semibold">${sym}${formatNum(g ? g.sgstAmount : numVal*0.09)}</span></div>
+                <div class="flex justify-between p-2.5 rounded-xl bg-neutral-50 border border-[#E9E9EC]"><span>IGST / Total GST</span><span class="font-mono-num font-bold text-[#347BCB]">${sym}${formatNum(g ? g.igstAmount : numVal*0.18)}</span></div>
+                <div class="flex justify-between p-3 rounded-xl bg-[#10232B] text-white"><span class="font-bold">Final Total</span><span class="font-mono-num font-bold text-lg text-[#C5F4D5]">${sym}${formatNum(g ? g.finalAmount : numVal*1.18)}</span></div>
+              </div>
+            </div>
+          </main>
+        `;
+      }
+
+      function renderCurrencyScreen() {
+        const fromMeta = POPULAR_CURRENCIES.find(c => c.code === state.fxFrom) || POPULAR_CURRENCIES[0];
+        const toMeta = POPULAR_CURRENCIES.find(c => c.code === state.fxTo) || POPULAR_CURRENCIES[1];
+        const amt = parseFloat(state.fxAmount) || 0;
+        const rate = state.fxRates[state.fxTo] || 1;
+        const converted = amt * rate;
+        return `
+          <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+              <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
+              <h1 class="text-lg font-bold">Currency Converter</h1>
+            </div>
+            <button onclick="appAct.nav('currency')" class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-bold">↻ Refresh</button>
+          </header>
+          <main class="flex-1 w-full max-w-5xl mx-auto p-3 sm:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <div class="lg:col-span-5 bg-white rounded-2xl p-5 shadow-xl border border-[#E9E9EC] space-y-3">
+              <div class="text-xs font-bold text-neutral-500">1. From Currency</div>
+              <div class="flex items-center justify-between p-3 rounded-xl bg-[#F7F2FA] border border-[#E9E9EC]">
+                <div class="flex items-center gap-3">
+                  <span class="text-3xl">${fromMeta.flag}</span>
+                  <div>
+                    <div class="text-sm font-bold">${fromMeta.code} – ${fromMeta.name}</div>
+                    <div class="text-xs text-neutral-500">${fromMeta.country}</div>
+                  </div>
+                </div>
+                <select onchange="window.updateFxFrom(this.value)" class="px-2 py-1.5 rounded-lg bg-white border border-[#E9E9EC] text-xs font-bold">
+                  ${POPULAR_CURRENCIES.map(c => `<option value="${c.code}" ${c.code === state.fxFrom ? 'selected' : ''}>${c.code}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-neutral-500 mb-1">Amount (${fromMeta.symbol})</label>
+                <input type="number" value="${state.fxAmount}" oninput="window.updateFxAmt(this.value)" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F2FFF7] border-2 border-[#C5F4D5] font-mono-num font-bold text-xl" />
+              </div>
+              <div class="flex justify-center py-1">
+                <button onclick="appAct.swapFx()" class="w-11 h-11 rounded-full bg-[#347BCB] text-white font-bold shadow-md">⇅</button>
+              </div>
+              <div class="text-xs font-bold text-neutral-500">To Currency</div>
+              <div class="flex items-center justify-between p-3 rounded-xl bg-[#F7F2FA] border border-[#E9E9EC]">
+                <div class="flex items-center gap-3">
+                  <span class="text-3xl">${toMeta.flag}</span>
+                  <div>
+                    <div class="text-sm font-bold">${toMeta.code} – ${toMeta.name}</div>
+                    <div class="text-xs text-neutral-500">${toMeta.country}</div>
+                  </div>
+                </div>
+                <select onchange="window.updateFxTo(this.value)" class="px-2 py-1.5 rounded-lg bg-white border border-[#E9E9EC] text-xs font-bold">
+                  ${POPULAR_CURRENCIES.map(c => `<option value="${c.code}" ${c.code === state.fxTo ? 'selected' : ''}>${c.code}</option>`).join('')}
+                </select>
+              </div>
+              <div class="p-4 rounded-xl lcd-panel">
+                <div class="text-xs font-mono-num font-bold opacity-80">Converted Amount (1 ${state.fxFrom} = ${formatNum(rate, 'INDIA', 4)} ${state.fxTo})</div>
+                <div id="fx-converted-val" class="font-mono-num font-bold text-3xl mt-1">${toMeta.symbol} ${formatNum(converted)}</div>
+              </div>
+              <div class="text-[11px] text-neutral-500">Last Updated: ${state.fxLastUpdated}</div>
+            </div>
+
+            <div class="lg:col-span-7 bg-white/85 rounded-2xl p-3 shadow-md border border-[#E9E9EC] space-y-2 max-h-[540px] overflow-y-auto">
+              <div class="text-xs font-bold text-[#10232B] px-2 py-1">Popular World Currencies (Tap any card to set Target)</div>
+              ${POPULAR_CURRENCIES.map(c => {
+                const r = state.fxRates[c.code] || 1;
+                return `
+                  <div onclick="window.updateFxTo('${c.code}')" class="cursor-pointer bg-white rounded-xl p-3 border ${c.code === state.fxTo ? 'border-[#347BCB] bg-[#F2FFF7]' : 'border-[#E9E9EC]'} flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <span class="text-2xl">${c.flag}</span>
+                      <div>
+                        <div class="font-mono-num font-bold text-sm">${c.code}</div>
+                        <div class="text-xs text-neutral-500">${c.name}</div>
+                      </div>
+                    </div>
+                    <div class="text-right font-mono-num">
+                      <div class="font-bold text-sm">1 ${state.fxFrom} = ${formatNum(r, 'INDIA', 4)} ${c.code}</div>
+                      <div class="text-xs font-semibold text-[#347BCB]">${c.symbol} ${formatNum(amt * r)}</div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </main>
+        `;
+      }
+
+      function renderCitizenScreen() {
+        const numVal = parseFloat(state.displayValue) || 0;
+        const e = state.emiResult;
+        return `
+          <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+              <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
+              <h1 class="text-lg font-bold">Calculator</h1>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="window.toggleCitizenEmi()" class="px-3 py-1.5 rounded-lg bg-[#347BCB] text-xs font-bold">${state.citizenSubMode === 'CITIZEN' ? 'Loan EMI' : 'Citizen Keypad'}</button>
+              <button onclick="appAct.nav('history')" class="px-2.5 py-1.5 rounded-lg bg-white/10 text-xs font-bold">History</button>
+            </div>
+          </header>
+          <main class="flex-1 w-full max-w-2xl mx-auto p-3 sm:p-5 space-y-3">
+            <h2 class="text-center text-2xl font-extrabold text-[#10232B]">${state.citizenSubMode === 'CITIZEN' ? 'Citizen Calculator' : 'Loan EMI Calculator'}</h2>
+            ${state.citizenSubMode === 'CITIZEN' ? `
+              <div class="bg-[#15191D] p-3 rounded-2xl shadow-xl">
+                <div class="lcd-panel rounded-xl p-4 min-h-[130px] flex flex-col justify-between">
+                  <div class="flex justify-between text-xs font-mono-num font-bold opacity-80 border-b border-black/15 pb-1">
+                    <span>CT-512N · GT: ${formatNum(state.grandTotal)}</span>
+                    <span>${state.expression}</span>
+                  </div>
+                  <div class="font-mono-num font-bold text-4xl text-right my-2">${formatNum(numVal)}</div>
+                  <div class="text-[11px] font-mono-num opacity-75 truncate">${toIndianWords(numVal)}</div>
+                </div>
+              </div>
+              <div class="bg-[#15191D] p-3 rounded-2xl shadow-2xl space-y-2">
+                <div class="grid grid-cols-3 gap-2">
+                  <button onclick="appAct.shareText('${formatNum(numVal)}')" class="h-12 rounded-xl key-blue font-bold text-xs">CHECK</button>
+                  <button onclick="appAct.del()" class="h-12 rounded-xl key-blue-sec font-bold text-xs">CORRECT / DELETE</button>
+                  <button onclick="appAct.clear()" class="h-12 rounded-xl key-red font-bold text-xs">CLEAR</button>
+                </div>
+                <div class="grid grid-cols-5 gap-2">
+                  <button onclick="appAct.mem('GT')" class="h-12 rounded-xl key-3d font-bold text-sm text-[#C5F4D5]">GT</button>
+                  <button onclick="appAct.sqrt()" class="h-12 rounded-xl key-3d font-bold text-sm">√X</button>
+                  <button onclick="appAct.mem('M+')" class="h-12 rounded-xl key-3d font-bold text-sm">M+</button>
+                  <button onclick="appAct.mem('M-')" class="h-12 rounded-xl key-3d font-bold text-sm">M-</button>
+                  <button onclick="appAct.mem('MR')" class="h-12 rounded-xl key-3d font-bold text-sm text-[#548DD7]">MR</button>
+
+                  <button onclick="appAct.digit('7')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">7</button>
+                  <button onclick="appAct.digit('8')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">8</button>
+                  <button onclick="appAct.digit('9')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">9</button>
+                  <button onclick="appAct.op('÷')" class="h-14 rounded-xl key-blue font-mono-num font-bold text-2xl">÷</button>
+                  <button onclick="appAct.op('MU')" class="h-14 rounded-xl key-3d font-bold text-sm">MU</button>
+
+                  <button onclick="appAct.digit('4')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">4</button>
+                  <button onclick="appAct.digit('5')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">5</button>
+                  <button onclick="appAct.digit('6')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">6</button>
+                  <button onclick="appAct.op('×')" class="h-14 rounded-xl key-blue font-mono-num font-bold text-2xl">×</button>
+                  <button onclick="appAct.percent()" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">%</button>
+
+                  <button onclick="appAct.digit('1')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">1</button>
+                  <button onclick="appAct.digit('2')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">2</button>
+                  <button onclick="appAct.digit('3')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">3</button>
+                  <button onclick="appAct.op('−')" class="h-14 rounded-xl key-blue font-mono-num font-bold text-2xl">−</button>
+                  <button onclick="appAct.mem('MC')" class="h-14 rounded-xl key-3d font-bold text-xs text-[#C5F4D5]">MC</button>
+
+                  <button onclick="appAct.digit('0')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">0</button>
+                  <button onclick="appAct.digit('00')" class="h-14 rounded-xl key-3d font-mono-num font-bold text-xl">00</button>
+                  <button onclick="appAct.decimal()" class="h-14 rounded-xl key-3d font-mono-num font-bold text-2xl">.</button>
+                  <button onclick="appAct.op('+')" class="h-14 rounded-xl key-blue font-mono-num font-bold text-2xl">+</button>
+                  <button onclick="appAct.equals()" class="h-14 rounded-xl key-equal font-mono-num font-bold text-2xl">=</button>
+                </div>
+              </div>
+            ` : `
+              <div class="bg-white rounded-2xl p-5 shadow-lg border border-[#E9E9EC] space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-neutral-600 mb-1">Loan Amount (${state.settings.currencySymbol})</label>
+                  <input type="number" value="${state.emiLoan}" oninput="state.emiLoan=this.value" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-neutral-600 mb-1">Annual Interest Rate (%)</label>
+                  <input type="number" step="0.1" value="${state.emiRate}" oninput="state.emiRate=this.value" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-neutral-600 mb-1">Loan Tenure (${state.emiUnit})</label>
+                  <div class="flex gap-2">
+                    <input type="number" value="${state.emiTenure}" oninput="state.emiTenure=this.value" class="flex-1 px-3.5 py-2.5 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono-num font-bold" />
+                    <button onclick="state.emiUnit=state.emiUnit==='YEARS'?'MONTHS':'YEARS';appAct.calcEmi()" class="px-4 py-2 rounded-xl bg-[#10232B] text-white text-xs font-bold">${state.emiUnit}</button>
+                  </div>
+                </div>
+                <button onclick="appAct.calcEmi()" class="w-full py-3 rounded-xl bg-[#347BCB] text-white font-bold text-sm">Calculate EMI</button>
+                <div class="p-4 rounded-xl lcd-panel">
+                  <div class="text-xs font-mono-num font-bold">Monthly EMI (${e.months} Months)</div>
+                  <div class="font-mono-num font-bold text-3xl mt-1">₹${formatNum(e.monthlyEmi)}</div>
+                </div>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between p-2.5 rounded-xl bg-[#F7F2FA]"><span>Principal Amount</span><span class="font-mono-num font-bold">₹${formatNum(e.principal)}</span></div>
+                  <div class="flex justify-between p-2.5 rounded-xl bg-[#F2FFF7]"><span>Total Interest</span><span class="font-mono-num font-bold text-[#D83B29]">₹${formatNum(e.totalInterest)}</span></div>
+                  <div class="flex justify-between p-3 rounded-xl bg-[#10232B] text-white"><span>Total Payment</span><span class="font-mono-num font-bold text-[#C5F4D5]">₹${formatNum(e.totalPayment)}</span></div>
+                </div>
+              </div>
+            `}
+          </main>
+        `;
+      }
+
+      function renderHistoryScreen() {
+        const sym = state.settings.currencySymbol;
+        return `
+          <header class="sticky top-0 z-30 bg-[#657780] text-white h-14 px-4 flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+              <button onclick="appAct.nav(state.prevScreen==='history'?'gst':state.prevScreen)" class="w-10 h-10 rounded-lg hover:bg-white/15 flex items-center justify-center text-xl">←</button>
+              <h1 class="text-lg font-bold">History</h1>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="appAct.clearHistory()" class="px-3 py-1.5 rounded-lg bg-white/15 text-xs font-bold">🗑 Clear All</button>
+            </div>
+          </header>
+          <main class="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-5 space-y-3">
+            ${state.history.length === 0 ? `
+              <div class="bg-white rounded-2xl p-10 text-center border border-[#E9E9EC]">
+                <div class="font-bold text-[#10232B]">No Calculation History Yet</div>
+              </div>
+            ` : state.history.map(item => `
+              <div class="bg-white rounded-2xl p-4 shadow-sm border border-[#E9E9EC] flex items-stretch gap-3">
+                <div class="flex flex-col items-center justify-between pr-3 border-r border-[#E9E9EC]">
+                  <button onclick="appAct.shareText('${item.expression} = ${item.finalAmount}')" class="w-10 h-10 rounded-full bg-[#25D366] text-white font-bold flex items-center justify-center">💬</button>
+                  <button onclick="appAct.deleteHistory('${item.id}')" class="text-xs text-[#D83B29] font-bold mt-2">Del</button>
+                </div>
+                <div class="flex-1 space-y-1.5 text-sm">
+                  <div class="text-xs font-bold text-[#657780]">${item.type} · ${item.expression}</div>
+                  <div class="flex justify-between"><span>Original Amount:</span><span class="font-mono-num font-bold">${sym}${formatNum(item.originalAmount)}</span></div>
+                  ${item.gstRate !== undefined ? `
+                    <div class="flex justify-between text-xs"><span>GST (${item.gstRate}%):</span><span class="font-mono-num">${sym}${formatNum(item.gstAmount || 0)}</span></div>
+                    <div class="flex justify-between text-xs"><span>CGST (${Math.abs(item.gstRate)/2}%):</span><span class="font-mono-num">${sym}${formatNum(item.cgstAmount || 0)}</span></div>
+                    <div class="flex justify-between text-xs"><span>SGST (${Math.abs(item.gstRate)/2}%):</span><span class="font-mono-num">${sym}${formatNum(item.sgstAmount || 0)}</span></div>
+                  ` : ''}
+                  <div class="bg-neutral-100 rounded-xl px-3 py-2 flex items-center justify-between border border-neutral-200">
+                    <span class="font-mono-num font-bold text-base">= ${sym}${formatNum(item.finalAmount)}</span>
+                    <button onclick="appAct.shareText('${item.expression} = ${item.finalAmount}')" class="px-2.5 py-1 rounded bg-white border text-xs font-bold">Share</button>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </main>
+        `;
+      }
+
+      function renderAgeScreen() {
+        const d = parseInt(state.dobDay, 10) || 15;
+        const m = parseInt(state.dobMonth, 10) || 8;
+        const y = parseInt(state.dobYear, 10) || 1998;
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const dob = new Date(y, m - 1, d);
+        let years = today.getFullYear() - dob.getFullYear();
+        let months = today.getMonth() - dob.getMonth();
+        let days = today.getDate() - dob.getDate();
+        if (days < 0) {
+          months -= 1;
+          days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+        }
+        if (months < 0) { years -= 1; months += 12; }
+        let nextBday = new Date(today.getFullYear(), m - 1, d);
+        if (nextBday < today) nextBday = new Date(today.getFullYear() + 1, m - 1, d);
+        const diffDays = Math.max(0, Math.ceil((nextBday - today) / (1000 * 60 * 60 * 24)));
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+        return `
+          <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+              <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
+              <h1 class="text-lg font-bold">Age Calculator</h1>
+            </div>
+            <button onclick="appAct.shareText('Age: ${years} Years, ${months} Months, ${days} Days')" class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-bold">Share</button>
+          </header>
+          <main class="flex-1 w-full max-w-3xl mx-auto p-4 space-y-4">
+            <h2 class="text-center text-2xl font-extrabold text-[#10232B]">Age Calculator</h2>
+            <div class="bg-white rounded-2xl p-5 shadow-lg border border-[#E9E9EC] space-y-4">
+              <h3 class="font-bold text-base">Enter Birth Date</h3>
+              <div class="grid grid-cols-3 gap-3">
+                <div><label class="text-xs text-neutral-500">Day (DD)</label><input type="number" value="${state.dobDay}" oninput="state.dobDay=this.value" class="w-full px-3 py-2.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold text-lg" /></div>
+                <div><label class="text-xs text-neutral-500">Month (MM)</label><input type="number" value="${state.dobMonth}" oninput="state.dobMonth=this.value" class="w-full px-3 py-2.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold text-lg" /></div>
+                <div><label class="text-xs text-neutral-500">Year (YYYY)</label><input type="number" value="${state.dobYear}" oninput="state.dobYear=this.value" class="w-full px-3 py-2.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold text-lg" /></div>
+              </div>
+              <button onclick="window.rerenderApp()" class="w-full py-3 rounded-xl bg-[#347BCB] text-white font-bold text-sm">Calculate Age</button>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-xl border border-[#E9E9EC]">
+              <h3 class="font-bold text-base text-[#10232B] mb-3">Age</h3>
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-3.5 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5]"><div class="font-mono-num font-extrabold text-3xl text-[#10232B]">${years}</div><div class="text-xs font-bold text-neutral-600 mt-1">Years</div></div>
+                <div class="p-3.5 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5]"><div class="font-mono-num font-extrabold text-3xl text-[#347BCB]">${months}</div><div class="text-xs font-bold text-neutral-600 mt-1">Months</div></div>
+                <div class="p-3.5 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5]"><div class="font-mono-num font-extrabold text-3xl text-[#10232B]">${days}</div><div class="text-xs font-bold text-neutral-600 mt-1">Days</div></div>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 shadow-lg border border-[#E9E9EC]">
+              <h3 class="font-bold text-base text-[#10232B] mb-3">Your Next Birthday In</h3>
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-3 rounded-xl bg-[#F7F2FA]"><div class="font-mono-num font-bold text-xl text-[#347BCB]">${diffDays} Days</div><div class="text-xs text-neutral-500">Remaining</div></div>
+                <div class="p-3 rounded-xl bg-[#F2FFF7]"><div class="font-mono-num font-bold text-sm text-[#10232B]">${nextBday.toLocaleDateString()}</div><div class="text-xs text-neutral-500">Date</div></div>
+                <div class="p-3 rounded-xl bg-[#F2FFF7]"><div class="font-bold text-sm text-[#10232B]">${weekdays[nextBday.getDay()]}</div><div class="text-xs text-neutral-500">Weekday</div></div>
+              </div>
+            </div>
+          </main>
+        `;
+      }
+
+      function renderBanknoteScreen() {
+        let notesCount = 0, grandTotal = 0;
+        INDIAN_DENOMINATIONS.forEach(d => {
+          const q = parseInt(state.cashQty[d] || '0', 10) || 0;
+          if (q > 0) { notesCount += q; grandTotal += d * q; }
+        });
+        const words = state.cashFormat === 'INDIA' ? toIndianWords(grandTotal) : toWesternWords(grandTotal);
+        return `
+          <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+              <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
+              <h1 class="text-lg font-bold">Money Cash Counter</h1>
+            </div>
+            <button onclick="window.resetCash()" class="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-bold">↻ Reset</button>
+          </header>
+          <main class="flex-1 w-full max-w-4xl mx-auto p-3 sm:p-5 space-y-4">
+            <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-xl border border-[#E9E9EC] space-y-3">
+              <div class="flex justify-between items-center border-b border-[#E9E9EC] pb-2.5">
+                <span class="text-xs font-bold text-[#10232B]">Display Format</span>
+                <div class="flex gap-1 bg-neutral-100 p-1 rounded-xl">
+                  <button onclick="state.cashFormat='INDIA';window.rerenderApp()" class="px-3 py-1 rounded-lg text-xs font-bold ${state.cashFormat==='INDIA'?'bg-[#347BCB] text-white':''}">India</button>
+                  <button onclick="state.cashFormat='WESTERN';window.rerenderApp()" class="px-3 py-1 rounded-lg text-xs font-bold ${state.cashFormat==='WESTERN'?'bg-[#347BCB] text-white':''}">Western</button>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3">
+                <div class="sm:col-span-4 p-3 rounded-xl bg-[#F7F2FA] border border-[#E9E9EC]">
+                  <div class="text-xs font-bold text-neutral-500">Notes Total</div>
+                  <div id="cash-notes-total" class="font-mono-num font-extrabold text-2xl text-[#10232B]">${formatNum(notesCount, state.cashFormat, 0)} Pcs</div>
+                </div>
+                <div class="sm:col-span-8 p-3 rounded-xl lcd-panel">
+                  <div class="text-xs font-mono-num font-bold opacity-75">Grand Total</div>
+                  <div id="cash-grand-total" class="font-mono-num font-extrabold text-3xl">₹${formatNum(grandTotal, state.cashFormat, 0)}</div>
+                </div>
+              </div>
+              <div class="p-3 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5]">
+                <div class="text-[11px] font-bold text-[#347BCB]">Amount in Words</div>
+                <div id="cash-words" class="text-sm font-bold text-[#10232B]">${words}</div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg border border-[#E9E9EC] overflow-hidden">
+              <div class="grid grid-cols-12 bg-[#10232B] text-white px-4 py-3 text-xs font-bold">
+                <div class="col-span-4">Notes</div>
+                <div class="col-span-4 text-center">Pcs</div>
+                <div class="col-span-4 text-right">Total</div>
+              </div>
+              <div class="divide-y divide-[#E9E9EC]">
+                ${INDIAN_DENOMINATIONS.map(d => {
+                  const q = parseInt(state.cashQty[d] || '0', 10) || 0;
+                  return `
+                    <div class="grid grid-cols-12 items-center px-4 py-2.5">
+                      <div class="col-span-4"><span class="inline-block w-16 py-1 text-center rounded-lg bg-[#25252D] text-white font-mono-num font-bold text-sm">₹${d}</span> ×</div>
+                      <div class="col-span-4 text-center">
+                        <input type="number" min="0" value="${state.cashQty[d] || ''}" oninput="window.updateCashRow(${d}, this.value)" placeholder="0" class="w-24 px-2 py-1.5 text-center rounded-xl bg-[#F7F2FA] border font-mono-num font-bold" />
+                      </div>
+                      <div id="cash-row-${d}" class="col-span-4 text-right font-mono-num font-bold text-sm">= ₹${formatNum(d * q, state.cashFormat, 0)}</div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              <button onclick="window.resetCash()" class="py-3 rounded-xl key-red font-bold text-xs">Reset</button>
+              <button onclick="appAct.shareText('Grand Total: ₹${formatNum(grandTotal, state.cashFormat, 0)} (' + '${words}' + ')')" class="py-3 rounded-xl key-blue font-bold text-xs">Share Result</button>
+              <button onclick="appAct.shareText('₹${formatNum(grandTotal, state.cashFormat, 0)}')" class="py-3 rounded-xl key-blue-sec font-bold text-xs">Copy Total</button>
+              <button onclick="appAct.saveCashHistory(${notesCount}, ${grandTotal}, '${words}')" class="py-3 rounded-xl bg-[#10232B] text-white font-bold text-xs">Save Calculation</button>
+            </div>
+          </main>
+        `;
+      }
+
+      function renderSettingsOrAbout() {
+        return `
+          <header class="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+              <button onclick="appAct.toggleDrawer(true)" class="w-10 h-10 rounded-lg hover:bg-white/10 flex items-center justify-center text-xl">☰</button>
+              <h1 class="text-lg font-bold">${state.screen === 'settings' ? 'Settings' : 'About Application'}</h1>
+            </div>
+          </header>
+          <main class="flex-1 w-full max-w-3xl mx-auto p-4 space-y-4">
+            <div class="bg-white rounded-2xl p-5 shadow-md border border-[#E9E9EC] space-y-3">
+              <h2 class="font-bold text-base text-[#10232B]">All-in-One Citizen &amp; GST Calculator</h2>
+              <p class="text-xs text-neutral-600">Includes GST Rates Calculator, Currency Converter, Citizen Calculator with Loan EMI, Calculation History, Age Calculator, and Banknote Cash Counter.</p>
+              <div class="flex gap-2 pt-2">
+                <button onclick="state.settings.numberFormat='INDIA';window.rerenderApp()" class="px-4 py-2 rounded-xl text-xs font-bold ${state.settings.numberFormat==='INDIA'?'bg-[#347BCB] text-white':'bg-neutral-100'}">India Format (Lakh/Crore)</button>
+                <button onclick="state.settings.numberFormat='WESTERN';window.rerenderApp()" class="px-4 py-2 rounded-xl text-xs font-bold ${state.settings.numberFormat==='WESTERN'?'bg-[#347BCB] text-white':'bg-neutral-100'}">Western Format (Million)</button>
+              </div>
+            </div>
+          </main>
+        `;
+      }
+
+      window.rerenderApp = render;
+      window.toggleCitizenEmi = function () {
+        state.citizenSubMode = state.citizenSubMode === 'CITIZEN' ? 'EMI' : 'CITIZEN';
+        render();
+      };
+      window.updateFxFrom = function (val) { state.fxFrom = val; fetchLiveFx(val); };
+      window.updateFxTo = function (val) { state.fxTo = val; render(); };
+      window.updateFxAmt = function (val) {
+        state.fxAmount = val;
+        const toMeta = POPULAR_CURRENCIES.find(c => c.code === state.fxTo) || POPULAR_CURRENCIES[1];
+        const el = document.getElementById('fx-converted-val');
+        if (el) el.textContent = toMeta.symbol + ' ' + formatNum((parseFloat(val) || 0) * (state.fxRates[state.fxTo] || 1));
+      };
+      window.resetCash = function () {
+        INDIAN_DENOMINATIONS.forEach(d => state.cashQty[d] = '');
+        render();
+      };
+      window.updateCashRow = function (denom, val) {
+        state.cashQty[denom] = val.replace(/[^0-9]/g, '');
+        let notesCount = 0, grandTotal = 0;
+        INDIAN_DENOMINATIONS.forEach(d => {
+          const q = parseInt(state.cashQty[d] || '0', 10) || 0;
+          if (q > 0) { notesCount += q; grandTotal += d * q; }
+          const rowEl = document.getElementById('cash-row-' + d);
+          if (rowEl) rowEl.textContent = '= ₹' + formatNum(d * q, state.cashFormat, 0);
+        });
+        const nEl = document.getElementById('cash-notes-total');
+        const gEl = document.getElementById('cash-grand-total');
+        const wEl = document.getElementById('cash-words');
+        if (nEl) nEl.textContent = formatNum(notesCount, state.cashFormat, 0) + ' Pcs';
+        if (gEl) gEl.textContent = '₹' + formatNum(grandTotal, state.cashFormat, 0);
+        if (wEl) wEl.textContent = state.cashFormat === 'INDIA' ? toIndianWords(grandTotal) : toWesternWords(grandTotal);
+      };
+
+      function render() {
+        const root = document.getElementById('app-root');
+        if (!root) return;
+        let content = '';
+        if (state.screen === 'gst') content = renderGstScreen();
+        else if (state.screen === 'currency') content = renderCurrencyScreen();
+        else if (state.screen === 'citizen') content = renderCitizenScreen();
+        else if (state.screen === 'history') content = renderHistoryScreen();
+        else if (state.screen === 'age') content = renderAgeScreen();
+        else if (state.screen === 'banknote') content = renderBanknoteScreen();
+        else content = renderSettingsOrAbout();
+
+        root.innerHTML = renderDrawer() + content + (state.toast ? `<div class="fixed bottom-4 right-4 z-50 bg-[#10232B] text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-xl">${state.toast}</div>` : '');
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>

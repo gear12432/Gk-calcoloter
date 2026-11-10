@@ -102,7 +102,7 @@ const CURRENCIES_STORAGE_KEY = 'all_in_one_calc_currencies_v1';
 export const INITIAL_SAMPLE_HISTORY: HistoryRecord[] = [
   {
     id: 'sample-1',
-    timestamp: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
+    timestamp: '2025-02-15T10:30:00.000Z',
     type: 'GST',
     expression: '10000 + 18% GST',
     originalAmount: 10000,
@@ -116,7 +116,7 @@ export const INITIAL_SAMPLE_HISTORY: HistoryRecord[] = [
   },
   {
     id: 'sample-2',
-    timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+    timestamp: '2025-02-15T09:15:00.000Z',
     type: 'GST',
     expression: '25000 + 15% GST',
     originalAmount: 25000,
@@ -130,7 +130,7 @@ export const INITIAL_SAMPLE_HISTORY: HistoryRecord[] = [
   },
   {
     id: 'sample-3',
-    timestamp: new Date(Date.now() - 1000 * 60 * 240).toISOString(),
+    timestamp: '2025-02-15T08:00:00.000Z',
     type: 'CITIZEN',
     expression: '4500 × 12 + 1250',
     originalAmount: 54000,

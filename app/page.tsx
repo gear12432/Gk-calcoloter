@@ -1,13 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import React, { useState } from 'react';
 import {
   ScreenId,
   HistoryRecord,
   AppSettings,
-  DEFAULT_SETTINGS,
-  INITIAL_SAMPLE_HISTORY,
   loadHistory,
   saveHistory,
   loadSettings,
@@ -85,89 +82,80 @@ export default function AllInOneCalculatorApp() {
         historyCount={history.length}
       />
 
-      {/* Screen Content with Smooth Transitions */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeScreen}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.16, ease: 'easeOut' }}
-          className="flex-1 flex flex-col w-full"
-        >
-          {activeScreen === 'gst' && (
-            <GstCalculatorScreen
-              settings={settings}
-              onUpdateSettings={handleUpdateSettings}
-              onAddHistory={handleAddHistory}
-              onOpenDrawer={() => setIsDrawerOpen(true)}
-              onOpenHistory={() => handleNavigate('history')}
-            />
-          )}
+      {/* Active Screen Container */}
+      <div className="flex-1 flex flex-col w-full transition-opacity duration-150">
+        {activeScreen === 'gst' && (
+          <GstCalculatorScreen
+            settings={settings}
+            onUpdateSettings={handleUpdateSettings}
+            onAddHistory={handleAddHistory}
+            onOpenDrawer={() => setIsDrawerOpen(true)}
+            onOpenHistory={() => handleNavigate('history')}
+          />
+        )}
 
-          {activeScreen === 'currency' && (
-            <CurrencyConverterScreen
-              settings={settings}
-              onOpenDrawer={() => setIsDrawerOpen(true)}
-            />
-          )}
+        {activeScreen === 'currency' && (
+          <CurrencyConverterScreen
+            settings={settings}
+            onOpenDrawer={() => setIsDrawerOpen(true)}
+          />
+        )}
 
-          {activeScreen === 'citizen' && (
-            <CitizenCalculatorScreen
-              settings={settings}
-              onAddHistory={handleAddHistory}
-              onOpenDrawer={() => setIsDrawerOpen(true)}
-              onOpenHistory={() => handleNavigate('history')}
-            />
-          )}
+        {activeScreen === 'citizen' && (
+          <CitizenCalculatorScreen
+            settings={settings}
+            onAddHistory={handleAddHistory}
+            onOpenDrawer={() => setIsDrawerOpen(true)}
+            onOpenHistory={() => handleNavigate('history')}
+          />
+        )}
 
-          {activeScreen === 'history' && (
-            <HistoryScreen
-              settings={settings}
-              history={history}
-              onDeleteRecords={handleDeleteHistoryRecords}
-              onClearAllHistory={handleClearAllHistory}
-              onBack={() =>
-                handleNavigate(
-                  previousScreen === 'history' ? 'gst' : previousScreen
-                )
-              }
-            />
-          )}
+        {activeScreen === 'history' && (
+          <HistoryScreen
+            settings={settings}
+            history={history}
+            onDeleteRecords={handleDeleteHistoryRecords}
+            onClearAllHistory={handleClearAllHistory}
+            onBack={() =>
+              handleNavigate(
+                previousScreen === 'history' ? 'gst' : previousScreen
+              )
+            }
+          />
+        )}
 
-          {activeScreen === 'age' && (
-            <AgeCalculatorScreen
-              settings={settings}
-              onOpenDrawer={() => setIsDrawerOpen(true)}
-            />
-          )}
+        {activeScreen === 'age' && (
+          <AgeCalculatorScreen
+            settings={settings}
+            onOpenDrawer={() => setIsDrawerOpen(true)}
+          />
+        )}
 
-          {activeScreen === 'banknote' && (
-            <BanknoteCounterScreen
-              settings={settings}
-              onAddHistory={handleAddHistory}
-              onOpenDrawer={() => setIsDrawerOpen(true)}
-              onOpenHistory={() => handleNavigate('history')}
-            />
-          )}
+        {activeScreen === 'banknote' && (
+          <BanknoteCounterScreen
+            settings={settings}
+            onAddHistory={handleAddHistory}
+            onOpenDrawer={() => setIsDrawerOpen(true)}
+            onOpenHistory={() => handleNavigate('history')}
+          />
+        )}
 
-          {activeScreen === 'settings' && (
-            <SettingsScreen
-              settings={settings}
-              onUpdateSettings={handleUpdateSettings}
-              onClearAllHistory={handleClearAllHistory}
-              onOpenDrawer={() => setIsDrawerOpen(true)}
-            />
-          )}
+        {activeScreen === 'settings' && (
+          <SettingsScreen
+            settings={settings}
+            onUpdateSettings={handleUpdateSettings}
+            onClearAllHistory={handleClearAllHistory}
+            onOpenDrawer={() => setIsDrawerOpen(true)}
+          />
+        )}
 
-          {activeScreen === 'about' && (
-            <AboutScreen
-              onOpenDrawer={() => setIsDrawerOpen(true)}
-              onSelectScreen={handleNavigate}
-            />
-          )}
-        </motion.div>
-      </AnimatePresence>
+        {activeScreen === 'about' && (
+          <AboutScreen
+            onOpenDrawer={() => setIsDrawerOpen(true)}
+            onSelectScreen={handleNavigate}
+          />
+        )}
+      </div>
     </div>
   );
 }

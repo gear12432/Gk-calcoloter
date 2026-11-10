@@ -49,8 +49,29 @@ export default function CurrencyConverterScreen({
   const feedback = () => playKeyFeedback(settings.soundEnabled);
 
   const fetchLiveRates = useCallback(async (baseCurrency: string) => {
+    const upper = baseCurrency.toUpperCase();
     try {
-      const res = await fetch(`/api/rates?base=${encodeURIComponent(baseCurrency)}`);
+      // Direct CORS-enabled live exchange rate API (works on both GitHub Pages static & Node server)
+      const directRes = await fetch(
+        `https://open.er-api.com/v6/latest/${encodeURIComponent(upper)}`
+      );
+      if (directRes.ok) {
+        const directData = await directRes.json();
+        if (directData && directData.rates) {
+          setRates(directData.rates);
+          setLastUpdated(
+            directData.time_last_update_utc
+              ? new Date(directData.time_last_update_utc).toISOString()
+              : new Date().toISOString()
+          );
+          setProviderName('ExchangeRate-API Live');
+          setErrorMsg(null);
+          return;
+        }
+      }
+
+      // Fallback to Next.js API route
+      const res = await fetch(`/api/rates?base=${encodeURIComponent(upper)}`);
       if (!res.ok) {
         throw new Error(`Exchange rate server returned status ${res.status}`);
       }
@@ -75,28 +96,41 @@ export default function CurrencyConverterScreen({
 
   useEffect(() => {
     let active = true;
-    fetch(`/api/rates?base=${encodeURIComponent(fromCode)}`)
+    const upper = fromCode.toUpperCase();
+    fetch(`https://open.er-api.com/v6/latest/${encodeURIComponent(upper)}`)
       .then(async (res) => {
-        if (!res.ok) throw new Error(`Exchange rate server returned status ${res.status}`);
+        if (!res.ok) throw new Error('Primary rate endpoint error');
         return res.json();
       })
       .then((data) => {
         if (!active) return;
-        if (data.error || !data.rates) {
-          throw new Error(data.error || 'Invalid rate payload');
+        if (data && data.rates) {
+          setRates(data.rates);
+          setLastUpdated(
+            data.time_last_update_utc
+              ? new Date(data.time_last_update_utc).toISOString()
+              : new Date().toISOString()
+          );
+          setProviderName('ExchangeRate-API Live');
+          setErrorMsg(null);
         }
-        setRates(data.rates);
-        setLastUpdated(data.lastUpdated || new Date().toISOString());
-        setProviderName(data.provider || 'Live FX Feed');
-        setErrorMsg(null);
       })
-      .catch((err) => {
+      .catch(async () => {
         if (!active) return;
-        setErrorMsg(
-          err instanceof Error
-            ? err.message
-            : 'Unable to reach live exchange-rate server. Please check connection and tap Refresh.'
-        );
+        try {
+          const fallback = await fetch(`/api/rates?base=${encodeURIComponent(upper)}`);
+          const fbData = await fallback.json();
+          if (active && fbData && fbData.rates) {
+            setRates(fbData.rates);
+            setLastUpdated(fbData.lastUpdated || new Date().toISOString());
+            setProviderName(fbData.provider || 'Live FX Feed');
+            setErrorMsg(null);
+          }
+        } catch {
+          if (active) {
+            setErrorMsg('Unable to reach live exchange-rate server. Tap Refresh to retry.');
+          }
+        }
       })
       .finally(() => {
         if (active) setIsLoading(false);
