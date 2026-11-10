@@ -347,8 +347,8 @@ export default function CitizenCalculatorScreen({
   }, [unitInputVal, fromUnit, toUnit]);
 
   return (
-    <div className="h-[100dvh] w-full bg-[#FAFBF9] text-[#2C2C2C] flex flex-col justify-between overflow-hidden select-none">
-      {/* Top Display Area (Matches Reference Screenshot) */}
+    <div className="h-[100dvh] w-full bg-[#FFFFFF] text-[#1F2421] flex flex-col justify-between overflow-hidden select-none">
+      {/* Top Display Area */}
       <div className="relative flex-1 min-h-0 flex flex-col justify-between px-5 pt-3 pb-2">
         {/* Top Row: Subtle Menu Trigger to switch calculators */}
         <div className="flex items-center justify-between">
@@ -356,7 +356,7 @@ export default function CitizenCalculatorScreen({
             type="button"
             onClick={onOpenDrawer}
             aria-label="Open All Calculators Menu"
-            className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-[#757575] hover:bg-black/5 active:scale-95 transition-all"
+            className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-[#5A655E] hover:bg-[#EBF3EE] active:scale-95 transition-all"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -364,32 +364,32 @@ export default function CitizenCalculatorScreen({
           <button
             type="button"
             onClick={onOpenHistory}
-            className="text-xs font-medium text-[#757575] hover:text-[#3A8918] px-2 py-1 rounded-md transition-colors"
+            className="text-xs font-semibold text-[#3A8918] bg-[#EBF3EE] hover:bg-[#DCECE2] px-3 py-1.5 rounded-full transition-colors"
           >
             All Tools & History
           </button>
         </div>
 
-        {/* Right-Aligned Expression Input with Green Vertical Cursor Bar */}
+        {/* Right-Aligned Expression Input with Green Vertical Cursor Bar (Larger Text) */}
         <div className="my-auto flex items-center justify-end overflow-x-auto py-2">
-          <div className="flex items-center justify-end text-right text-4xl sm:text-5xl font-normal tracking-tight leading-tight break-all">
+          <div className="flex items-center justify-end text-right text-5xl sm:text-6xl font-medium tracking-tight leading-tight break-all">
             {renderColoredExpression()}
             <span
-              className="inline-block w-[2.5px] h-10 sm:h-12 bg-[#3A8918] ml-0.5 animate-pulse shrink-0"
+              className="inline-block w-[3px] h-12 sm:h-14 bg-[#3A8918] ml-1 animate-pulse shrink-0 rounded-full"
               aria-hidden="true"
             />
           </div>
         </div>
 
-        {/* Live Preview Result Row (Grey text right-aligned at bottom of display) */}
-        <div className="min-h-[40px] flex items-center justify-end text-right">
-          <span className="text-2xl sm:text-3xl font-normal text-[#858585] tabular-nums truncate">
+        {/* Live Preview Result Row (Larger Grey text right-aligned at bottom of display) */}
+        <div className="min-h-[44px] flex items-center justify-end text-right">
+          <span className="text-3xl sm:text-4xl font-medium text-[#758078] tabular-nums truncate">
             {livePreview}
           </span>
         </div>
       </div>
 
-      {/* Middle 4-Icon Toolbar Row + Thin Horizontal Divider (Exact Match to Screenshot) */}
+      {/* Middle 4-Icon Toolbar Row + Thin Horizontal Divider */}
       <div className="shrink-0 px-6">
         <div className="flex items-center justify-between py-2.5">
           {/* Left 3 Utility Icons: Clock (History) | Ruler (Unit Converter) | Scientific (√π e=) */}
@@ -402,13 +402,13 @@ export default function CitizenCalculatorScreen({
                 setShowUnitConverter(false);
               }}
               aria-label="Toggle Calculation History"
-              className={`p-1.5 rounded-full transition-colors ${
+              className={`p-2 rounded-full transition-colors ${
                 showInlineHistory
-                  ? 'text-[#3A8918] bg-[#3A8918]/10'
-                  : 'text-[#757575] hover:text-[#2C2C2C]'
+                  ? 'text-[#3A8918] bg-[#DCECE2]'
+                  : 'text-[#68736B] hover:bg-[#EBF3EE]'
               }`}
             >
-              <Clock className="w-6 h-6 stroke-[1.75]" />
+              <Clock className="w-6 h-6 stroke-[1.9]" />
             </button>
 
             <button
@@ -419,13 +419,13 @@ export default function CitizenCalculatorScreen({
                 setShowInlineHistory(false);
               }}
               aria-label="Unit Converter"
-              className={`p-1.5 rounded-full transition-colors ${
+              className={`p-2 rounded-full transition-colors ${
                 showUnitConverter
-                  ? 'text-[#3A8918] bg-[#3A8918]/10'
-                  : 'text-[#757575] hover:text-[#2C2C2C]'
+                  ? 'text-[#3A8918] bg-[#DCECE2]'
+                  : 'text-[#68736B] hover:bg-[#EBF3EE]'
               }`}
             >
-              <Ruler className="w-6 h-6 stroke-[1.75]" />
+              <Ruler className="w-6 h-6 stroke-[1.9]" />
             </button>
 
             <button
@@ -437,13 +437,13 @@ export default function CitizenCalculatorScreen({
                 setShowInlineHistory(false);
               }}
               aria-label="Scientific Calculator Mode"
-              className={`p-1.5 rounded-full transition-colors ${
+              className={`p-2 rounded-full transition-colors ${
                 showScientific
-                  ? 'text-[#3A8918] bg-[#3A8918]/10'
-                  : 'text-[#757575] hover:text-[#2C2C2C]'
+                  ? 'text-[#3A8918] bg-[#DCECE2]'
+                  : 'text-[#68736B] hover:bg-[#EBF3EE]'
               }`}
             >
-              <Calculator className="w-6 h-6 stroke-[1.75]" />
+              <Calculator className="w-6 h-6 stroke-[1.9]" />
             </button>
           </div>
 
@@ -452,23 +452,23 @@ export default function CitizenCalculatorScreen({
             type="button"
             onClick={handleBackspace}
             aria-label="Delete last digit"
-            className="p-1.5 rounded-full text-[#3A8918] hover:bg-[#3A8918]/10 active:scale-90 transition-all"
+            className="p-2 rounded-full text-[#3A8918] hover:bg-[#DCECE2] active:scale-90 transition-all"
           >
-            <Delete className="w-7 h-7 stroke-[1.9]" />
+            <Delete className="w-7 h-7 stroke-[2]" />
           </button>
         </div>
 
         {/* Thin Horizontal Divider Line */}
-        <div className="border-b border-[#E6E8E5] w-full" />
+        <div className="border-b border-[#DCE6DF] w-full" />
       </div>
 
       {/* Bottom Keypad / Inline History / Unit Converter Section */}
       <div className="h-[62dvh] w-full px-4 pt-3 pb-4 flex flex-col justify-between overflow-hidden">
         {showInlineHistory ? (
           /* Inline History Panel when Clock icon is active */
-          <div className="h-full flex flex-col justify-between bg-white rounded-2xl p-4 border border-[#E6E8E5]">
-            <div className="flex items-center justify-between border-b border-[#E6E8E5] pb-2 mb-2">
-              <span className="text-sm font-bold text-[#333333]">
+          <div className="h-full flex flex-col justify-between bg-[#F6FAF7] rounded-2xl p-4 border border-[#DCE6DF]">
+            <div className="flex items-center justify-between border-b border-[#DCE6DF] pb-2 mb-2">
+              <span className="text-sm font-bold text-[#1F2421]">
                 Recent Calculations
               </span>
               <div className="flex items-center gap-2">
@@ -482,7 +482,7 @@ export default function CitizenCalculatorScreen({
                 <button
                   type="button"
                   onClick={() => setShowInlineHistory(false)}
-                  className="px-2.5 py-1 rounded-lg bg-[#EAECE9] text-xs font-semibold text-[#333333]"
+                  className="px-3 py-1 rounded-full bg-[#DCECE2] text-xs font-semibold text-[#1F2421]"
                 >
                   Keypad
                 </button>
@@ -491,7 +491,7 @@ export default function CitizenCalculatorScreen({
 
             <div className="flex-1 overflow-y-auto space-y-2.5 pr-1">
               {history.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-sm text-[#858585]">
+                <div className="h-full flex items-center justify-center text-sm text-[#758078]">
                   No calculation history yet
                 </div>
               ) : (
@@ -503,10 +503,10 @@ export default function CitizenCalculatorScreen({
                       setExpression(String(h.finalAmount));
                       setShowInlineHistory(false);
                     }}
-                    className="w-full text-right p-2.5 rounded-xl hover:bg-[#F4F5F3] transition-colors border-b border-[#F4F5F3]"
+                    className="w-full text-right p-3 rounded-xl bg-white hover:bg-[#EBF3EE] transition-colors border border-[#DCE6DF]"
                   >
-                    <div className="text-sm text-[#757575]">{h.expression}</div>
-                    <div className="text-xl font-semibold text-[#3A8918]">
+                    <div className="text-sm text-[#68736B]">{h.expression}</div>
+                    <div className="text-2xl font-bold text-[#3A8918]">
                       = {formatNumber(h.finalAmount, settings.numberFormat)}
                     </div>
                   </button>
@@ -518,7 +518,7 @@ export default function CitizenCalculatorScreen({
               <button
                 type="button"
                 onClick={onClearHistory}
-                className="mt-2 w-full py-2.5 rounded-full bg-[#EAECE9] hover:bg-[#dfe2de] text-sm font-semibold text-[#333333] transition-colors"
+                className="mt-2 w-full py-2.5 rounded-full bg-[#DCECE2] hover:bg-[#CBE3D4] text-sm font-semibold text-[#1F2421] transition-colors"
               >
                 Clear history
               </button>
@@ -526,7 +526,7 @@ export default function CitizenCalculatorScreen({
           </div>
         ) : showUnitConverter ? (
           /* Built-in Unit Converter when Ruler icon is active */
-          <div className="h-full flex flex-col justify-between bg-white rounded-2xl p-4 border border-[#E6E8E5] space-y-3 overflow-y-auto">
+          <div className="h-full flex flex-col justify-between bg-[#F6FAF7] rounded-2xl p-4 border border-[#DCE6DF] space-y-3 overflow-y-auto">
             <div className="flex items-center justify-between">
               <div className="flex gap-1.5 overflow-x-auto pb-1">
                 {(Object.keys(UNIT_DEFINITIONS) as UnitCategory[]).map((cat) => (
@@ -538,10 +538,10 @@ export default function CitizenCalculatorScreen({
                       setFromUnitIdx(0);
                       setToUnitIdx(1);
                     }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap ${
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap ${
                       unitCat === cat
                         ? 'bg-[#429619] text-white'
-                        : 'bg-[#F4F5F3] text-[#555555]'
+                        : 'bg-[#EBF3EE] text-[#1F2421]'
                     }`}
                   >
                     {UNIT_DEFINITIONS[cat].label}
@@ -551,18 +551,18 @@ export default function CitizenCalculatorScreen({
               <button
                 type="button"
                 onClick={() => setShowUnitConverter(false)}
-                className="px-3 py-1 rounded-full bg-[#EAECE9] text-xs font-semibold text-[#333333] shrink-0 ml-2"
+                className="px-3 py-1 rounded-full bg-[#DCECE2] text-xs font-semibold text-[#1F2421] shrink-0 ml-2"
               >
                 Keypad
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="p-3.5 rounded-2xl bg-[#F4F5F3] space-y-2">
+              <div className="p-3.5 rounded-2xl bg-white border border-[#DCE6DF] space-y-2">
                 <select
                   value={fromUnitIdx}
                   onChange={(e) => setFromUnitIdx(Number(e.target.value))}
-                  className="w-full bg-transparent text-sm font-semibold text-[#333333] focus:outline-none"
+                  className="w-full bg-transparent text-sm font-semibold text-[#1F2421] focus:outline-none"
                 >
                   {currentCategory.units.map((u, i) => (
                     <option key={u.code} value={i}>
@@ -574,15 +574,15 @@ export default function CitizenCalculatorScreen({
                   type="number"
                   value={unitInputVal}
                   onChange={(e) => setUnitInputVal(e.target.value)}
-                  className="w-full bg-white px-3 py-2 rounded-xl text-2xl font-semibold text-[#2C2C2C] border border-[#E6E8E5] focus:outline-none focus:border-[#429619]"
+                  className="w-full bg-[#F6FAF7] px-3 py-2 rounded-xl text-2xl font-semibold text-[#1F2421] border border-[#DCE6DF] focus:outline-none focus:border-[#429619]"
                 />
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#F4F5F3] space-y-2">
+              <div className="p-3.5 rounded-2xl bg-white border border-[#DCE6DF] space-y-2">
                 <select
                   value={toUnitIdx}
                   onChange={(e) => setToUnitIdx(Number(e.target.value))}
-                  className="w-full bg-transparent text-sm font-semibold text-[#333333] focus:outline-none"
+                  className="w-full bg-transparent text-sm font-semibold text-[#1F2421] focus:outline-none"
                 >
                   {currentCategory.units.map((u, i) => (
                     <option key={u.code} value={i}>
@@ -590,7 +590,7 @@ export default function CitizenCalculatorScreen({
                     </option>
                   ))}
                 </select>
-                <div className="w-full bg-white px-3 py-2 rounded-xl text-2xl font-semibold text-[#3A8918] border border-[#E6E8E5] truncate">
+                <div className="w-full bg-[#F6FAF7] px-3 py-2 rounded-xl text-2xl font-semibold text-[#3A8918] border border-[#DCE6DF] truncate">
                   {convertedUnitValue}
                 </div>
               </div>
@@ -609,7 +609,7 @@ export default function CitizenCalculatorScreen({
                       else if (k === '⌫') setUnitInputVal((v) => v.slice(0, -1));
                       else setUnitInputVal((v) => (v === '0' ? k : v + k));
                     }}
-                    className="py-2.5 rounded-full bg-[#F4F5F3] hover:bg-[#EAECE9] text-base font-medium text-[#2C2C2C]"
+                    className="py-2.5 rounded-full bg-[#EBF3EE] hover:bg-[#DCECE2] text-lg font-semibold text-[#1F2421]"
                   >
                     {k}
                   </button>
@@ -618,7 +618,7 @@ export default function CitizenCalculatorScreen({
             </div>
           </div>
         ) : (
-          /* Standard & Scientific Circular Button Grid (Exact Match to Screenshot) */
+          /* Standard & Scientific Circular Button Grid with Light Colored Buttons & Larger Text */
           <div className="h-full flex flex-col gap-2.5 min-h-0">
             {/* Optional Scientific Row when √π e= icon is toggled */}
             {showScientific && (
@@ -626,7 +626,7 @@ export default function CitizenCalculatorScreen({
                 <button
                   type="button"
                   onClick={() => setIsDegree((d) => !d)}
-                  className="py-2 rounded-full bg-[#EAECE9] text-xs font-semibold text-[#3A8918]"
+                  className="py-2 rounded-full bg-[#DCECE2] text-sm font-bold text-[#3A8918]"
                 >
                   {isDegree ? 'DEG' : 'RAD'}
                 </button>
@@ -636,7 +636,7 @@ export default function CitizenCalculatorScreen({
                       key={tok}
                       type="button"
                       onClick={() => handleScientificToken(tok)}
-                      className="py-2 rounded-full bg-[#EAECE9] hover:bg-[#dfe2de] text-xs font-medium text-[#2C2C2C]"
+                      className="py-2 rounded-full bg-[#EBF3EE] hover:bg-[#DCECE2] text-sm font-semibold text-[#1F2421]"
                     >
                       {tok.replace('(', '')}
                     </button>
@@ -645,34 +645,34 @@ export default function CitizenCalculatorScreen({
               </div>
             )}
 
-            {/* 5x4 Circular Button Keypad Matching Uploaded Screenshot */}
+            {/* 5x4 Circular Button Keypad with Light Mint-Sky Tint & Larger Font Size */}
             <div className="flex-1 grid grid-cols-4 grid-rows-5 gap-3 sm:gap-3.5 min-h-0">
               {/* Row 1: C | () | % | ÷ */}
               <button
                 type="button"
                 onClick={handleClear}
-                className="h-full w-full rounded-full bg-[#EAECE9] hover:bg-[#dfe2de] active:scale-95 text-[#D93829] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#FCE8E6] hover:bg-[#F9D7D4] border border-[#F5C6C2] active:scale-95 text-[#D93829] text-3xl sm:text-4xl font-semibold flex items-center justify-center transition-all shadow-xs"
               >
                 C
               </button>
               <button
                 type="button"
                 onClick={handleParentheses}
-                className="h-full w-full rounded-full bg-[#EAECE9] hover:bg-[#dfe2de] active:scale-95 text-[#3A8918] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#DCECE2] hover:bg-[#CBE3D4] border border-[#C6DFCF] active:scale-95 text-[#2E7D12] text-3xl sm:text-4xl font-semibold flex items-center justify-center transition-all shadow-xs"
               >
-                ()
+                ( )
               </button>
               <button
                 type="button"
                 onClick={handlePercent}
-                className="h-full w-full rounded-full bg-[#EAECE9] hover:bg-[#dfe2de] active:scale-95 text-[#3A8918] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#DCECE2] hover:bg-[#CBE3D4] border border-[#C6DFCF] active:scale-95 text-[#2E7D12] text-3xl sm:text-4xl font-semibold flex items-center justify-center transition-all shadow-xs"
               >
                 %
               </button>
               <button
                 type="button"
                 onClick={() => handleOperator('÷')}
-                className="h-full w-full rounded-full bg-[#EAECE9] hover:bg-[#dfe2de] active:scale-95 text-[#3A8918] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#DCECE2] hover:bg-[#CBE3D4] border border-[#C6DFCF] active:scale-95 text-[#2E7D12] text-4xl sm:text-5xl font-medium flex items-center justify-center transition-all shadow-xs"
               >
                 ÷
               </button>
@@ -683,7 +683,7 @@ export default function CitizenCalculatorScreen({
                   key={n}
                   type="button"
                   onClick={() => handleDigit(n)}
-                  className="h-full w-full rounded-full bg-[#F4F5F3] hover:bg-[#EAECE9] active:scale-95 text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-all"
+                  className="h-full w-full rounded-full bg-[#EBF3EE] hover:bg-[#DCECE2] border border-[#D7E6DD] active:scale-95 text-[#1F2421] text-3xl sm:text-4xl font-semibold flex items-center justify-center transition-all shadow-xs"
                 >
                   {n}
                 </button>
@@ -691,7 +691,7 @@ export default function CitizenCalculatorScreen({
               <button
                 type="button"
                 onClick={() => handleOperator('×')}
-                className="h-full w-full rounded-full bg-[#EAECE9] hover:bg-[#dfe2de] active:scale-95 text-[#3A8918] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#DCECE2] hover:bg-[#CBE3D4] border border-[#C6DFCF] active:scale-95 text-[#2E7D12] text-4xl sm:text-5xl font-medium flex items-center justify-center transition-all shadow-xs"
               >
                 ×
               </button>
@@ -702,7 +702,7 @@ export default function CitizenCalculatorScreen({
                   key={n}
                   type="button"
                   onClick={() => handleDigit(n)}
-                  className="h-full w-full rounded-full bg-[#F4F5F3] hover:bg-[#EAECE9] active:scale-95 text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-all"
+                  className="h-full w-full rounded-full bg-[#EBF3EE] hover:bg-[#DCECE2] border border-[#D7E6DD] active:scale-95 text-[#1F2421] text-3xl sm:text-4xl font-semibold flex items-center justify-center transition-all shadow-xs"
                 >
                   {n}
                 </button>
@@ -710,7 +710,7 @@ export default function CitizenCalculatorScreen({
               <button
                 type="button"
                 onClick={() => handleOperator('−')}
-                className="h-full w-full rounded-full bg-[#EAECE9] hover:bg-[#dfe2de] active:scale-95 text-[#3A8918] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#DCECE2] hover:bg-[#CBE3D4] border border-[#C6DFCF] active:scale-95 text-[#2E7D12] text-4xl sm:text-5xl font-medium flex items-center justify-center transition-all shadow-xs"
               >
                 −
               </button>
@@ -721,7 +721,7 @@ export default function CitizenCalculatorScreen({
                   key={n}
                   type="button"
                   onClick={() => handleDigit(n)}
-                  className="h-full w-full rounded-full bg-[#F4F5F3] hover:bg-[#EAECE9] active:scale-95 text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-all"
+                  className="h-full w-full rounded-full bg-[#EBF3EE] hover:bg-[#DCECE2] border border-[#D7E6DD] active:scale-95 text-[#1F2421] text-3xl sm:text-4xl font-semibold flex items-center justify-center transition-all shadow-xs"
                 >
                   {n}
                 </button>
@@ -729,7 +729,7 @@ export default function CitizenCalculatorScreen({
               <button
                 type="button"
                 onClick={() => handleOperator('+')}
-                className="h-full w-full rounded-full bg-[#EAECE9] hover:bg-[#dfe2de] active:scale-95 text-[#3A8918] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#DCECE2] hover:bg-[#CBE3D4] border border-[#C6DFCF] active:scale-95 text-[#2E7D12] text-4xl sm:text-5xl font-medium flex items-center justify-center transition-all shadow-xs"
               >
                 +
               </button>
@@ -738,28 +738,28 @@ export default function CitizenCalculatorScreen({
               <button
                 type="button"
                 onClick={handlePlusMinus}
-                className="h-full w-full rounded-full bg-[#F4F5F3] hover:bg-[#EAECE9] active:scale-95 text-[#2C2C2C] text-xl sm:text-2xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#EBF3EE] hover:bg-[#DCECE2] border border-[#D7E6DD] active:scale-95 text-[#1F2421] text-2xl sm:text-3xl font-semibold flex items-center justify-center transition-all shadow-xs"
               >
                 +/−
               </button>
               <button
                 type="button"
                 onClick={() => handleDigit('0')}
-                className="h-full w-full rounded-full bg-[#F4F5F3] hover:bg-[#EAECE9] active:scale-95 text-[#2C2C2C] text-2xl sm:text-3xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#EBF3EE] hover:bg-[#DCECE2] border border-[#D7E6DD] active:scale-95 text-[#1F2421] text-3xl sm:text-4xl font-semibold flex items-center justify-center transition-all shadow-xs"
               >
                 0
               </button>
               <button
                 type="button"
                 onClick={handleDecimal}
-                className="h-full w-full rounded-full bg-[#F4F5F3] hover:bg-[#EAECE9] active:scale-95 text-[#2C2C2C] text-3xl sm:text-4xl font-normal flex items-center justify-center transition-all"
+                className="h-full w-full rounded-full bg-[#EBF3EE] hover:bg-[#DCECE2] border border-[#D7E6DD] active:scale-95 text-[#1F2421] text-4xl sm:text-5xl font-bold flex items-center justify-center transition-all shadow-xs"
               >
                 .
               </button>
               <button
                 type="button"
                 onClick={handleEquals}
-                className="h-full w-full rounded-full bg-[#429619] hover:bg-[#388214] active:scale-95 text-white text-3xl sm:text-4xl font-normal flex items-center justify-center shadow-sm transition-all"
+                className="h-full w-full rounded-full bg-[#429619] hover:bg-[#388214] active:scale-95 text-white text-4xl sm:text-5xl font-semibold flex items-center justify-center shadow-md transition-all"
               >
                 =
               </button>
