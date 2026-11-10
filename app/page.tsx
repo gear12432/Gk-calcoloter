@@ -23,8 +23,8 @@ import {
 } from '@/components/SettingsAndAboutScreens';
 
 export default function AllInOneCalculatorApp() {
-  const [activeScreen, setActiveScreen] = useState<ScreenId>('gst');
-  const [previousScreen, setPreviousScreen] = useState<ScreenId>('gst');
+  const [activeScreen, setActiveScreen] = useState<ScreenId>('citizen');
+  const [previousScreen, setPreviousScreen] = useState<ScreenId>('citizen');
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
@@ -72,7 +72,7 @@ export default function AllInOneCalculatorApp() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-[#F2FFF7] text-[#171717] relative overflow-x-hidden">
+    <div className="h-[100dvh] w-full flex flex-col bg-[#15191D] text-[#171717] relative overflow-hidden">
       {/* Left-Side Navigation Drawer */}
       <NavigationDrawer
         isOpen={isDrawerOpen}
@@ -83,7 +83,7 @@ export default function AllInOneCalculatorApp() {
       />
 
       {/* Active Screen Container */}
-      <div className="flex-1 flex flex-col w-full transition-opacity duration-150">
+      <div className="flex-1 flex flex-col w-full h-full overflow-hidden">
         {activeScreen === 'gst' && (
           <GstCalculatorScreen
             settings={settings}

@@ -300,31 +300,31 @@ export default function CitizenCalculatorScreen({
       : formatNumber(numericDisplay, settings.numberFormat, settings.decimalPlaces);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-[#E9FFF0] via-[#F2FFF7] to-[#B9EFCB] flex flex-col">
-      {/* Dark Navy Top Header */}
-      <header className="sticky top-0 z-30 bg-[#10232B] text-white h-14 px-4 flex items-center justify-between shadow-md border-b border-[#15191D]">
-        <div className="flex items-center gap-3">
+    <div className="h-[100dvh] w-full bg-[#15191D] flex flex-col overflow-hidden select-none">
+      {/* Dark Navy Top Header - Flush, Compact, Zero Gap */}
+      <header className="shrink-0 bg-[#10232B] text-white h-12 px-2.5 flex items-center justify-between border-b border-[#25252D]">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={onOpenDrawer}
             aria-label="Open navigation drawer"
-            className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
+            className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
           >
-            <Menu className="w-6 h-6 text-white" />
+            <Menu className="w-5 h-5 text-white" />
           </button>
-          <h1 className="text-lg font-bold tracking-tight text-white">
-            Calculator
+          <h1 className="text-base sm:text-lg font-bold tracking-tight text-white">
+            Citizen Calculator
           </h1>
         </div>
 
-        <div className="flex items-center gap-1.5 relative">
+        <div className="flex items-center gap-1 relative">
           <button
             type="button"
             onClick={() => {
               feedback();
               setMode((m) => (m === 'CITIZEN' ? 'EMI' : 'CITIZEN'));
             }}
-            className="px-3 py-1.5 rounded-lg bg-[#347BCB] hover:bg-[#548DD7] text-xs font-bold text-white flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1 rounded-lg bg-[#347BCB] hover:bg-[#548DD7] text-xs font-bold text-white flex items-center gap-1 transition-colors"
           >
             {mode === 'CITIZEN' ? (
               <>
@@ -343,7 +343,7 @@ export default function CitizenCalculatorScreen({
             type="button"
             onClick={onOpenHistory}
             aria-label="Calculation History"
-            className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
+            className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
           >
             <History className="w-5 h-5 text-white" />
           </button>
@@ -352,14 +352,14 @@ export default function CitizenCalculatorScreen({
             type="button"
             onClick={() => setIsMenuOpen((prev) => !prev)}
             aria-label="Calculator Options Menu"
-            className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
+            className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors"
           >
             <MoreVertical className="w-5 h-5 text-white" />
           </button>
 
           {/* Three-dot Dropdown Menu */}
           {isMenuOpen && (
-            <div className="absolute right-0 top-12 w-52 bg-white text-[#171717] rounded-xl shadow-2xl border border-[#E9E9EC] py-1.5 z-40">
+            <div className="absolute right-0 top-11 w-52 bg-white text-[#171717] rounded-xl shadow-2xl border border-[#E9E9EC] py-1.5 z-40">
               <button
                 type="button"
                 onClick={() => {
@@ -398,306 +398,296 @@ export default function CitizenCalculatorScreen({
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-3 py-3 sm:px-5 sm:py-5 flex flex-col">
-        {/* Large Centered Heading: Citizen Calculator */}
-        <div className="text-center mb-3">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#10232B] tracking-tight">
-            {mode === 'CITIZEN' ? 'Citizen Calculator' : 'Loan EMI Calculator'}
-          </h2>
-        </div>
-
-        {mode === 'CITIZEN' ? (
-          <div className="w-full max-w-xl mx-auto flex flex-col gap-3">
-            {/* Large Rectangular Green Citizen LCD Display */}
-            <div className="bg-[#15191D] p-3 rounded-2xl shadow-xl border border-[#25252D]">
-              <div className="bg-[#A6B991] text-[#101010] rounded-xl p-4 shadow-inner border-2 border-[#8d9f78] min-h-[136px] flex flex-col justify-between">
-                <div className="flex items-center justify-between text-xs font-mono font-bold text-[#101010]/80 border-b border-[#101010]/15 pb-1.5">
-                  <div className="flex items-center gap-2">
-                    <span>CT-512N</span>
-                    {memoryValue !== 0 && (
-                      <span className="px-1.5 py-0.5 bg-[#101010] text-[#A6B991] rounded-xs">
-                        MEMORY: {formatNumber(memoryValue, settings.numberFormat)}
-                      </span>
-                    )}
-                    {grandTotal !== 0 && (
-                      <span className="px-1.5 py-0.5 bg-[#101010]/80 text-[#A6B991] rounded-xs">
-                        GT: {formatNumber(grandTotal, settings.numberFormat)}
-                      </span>
-                    )}
-                  </div>
-                  <span className="truncate max-w-[200px]">{expression}</span>
-                </div>
-
-                <div className="my-2 text-right overflow-x-auto">
-                  <div className="font-mono font-bold text-4xl sm:text-5xl text-[#101010] tracking-tight tabular-nums leading-none">
-                    {formattedDisplay}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[11px] font-mono text-[#101010]/75 border-t border-[#101010]/15 pt-1">
-                  <span className="truncate">
-                    {settings.numberFormat === 'INDIA'
-                      ? numberToIndianWords(numericDisplay)
-                      : numberToWesternWords(numericDisplay)}
+      {/* Main Content: Full-Screen Fixed Non-Scrolling Keyboard Background (#15191D) */}
+      {mode === 'CITIZEN' ? (
+        <main className="flex-1 w-full bg-[#15191D] flex flex-col justify-between p-1.5 gap-1.5 overflow-hidden min-h-0">
+          {/* Large Rectangular Green Citizen LCD Display - Flush with Keypad */}
+          <div className="shrink-0 bg-[#A6B991] text-[#101010] rounded-xl px-3.5 py-2.5 shadow-inner border-2 border-[#8d9f78] flex flex-col justify-between min-h-[116px] sm:min-h-[132px]">
+            <div className="flex items-center justify-between text-[11px] font-mono font-bold text-[#101010]/80 border-b border-[#101010]/15 pb-1">
+              <div className="flex items-center gap-2">
+                <span>CT-512N CITIZEN</span>
+                {memoryValue !== 0 && (
+                  <span className="px-1.5 py-0.2 bg-[#101010] text-[#A6B991] rounded-xs">
+                    M: {formatNumber(memoryValue, settings.numberFormat)}
                   </span>
-                  <span className="shrink-0 ml-2">
-                    STEPS: {String(stepsList.length).padStart(2, '0')}
+                )}
+                {grandTotal !== 0 && (
+                  <span className="px-1.5 py-0.2 bg-[#101010]/80 text-[#A6B991] rounded-xs">
+                    GT: {formatNumber(grandTotal, settings.numberFormat)}
                   </span>
-                </div>
+                )}
+              </div>
+              <span className="truncate max-w-[220px]">{expression}</span>
+            </div>
+
+            <div className="my-1 text-right overflow-hidden">
+              <div className="font-mono font-extrabold text-4xl sm:text-5xl text-[#101010] tracking-tight tabular-nums leading-none truncate">
+                {formattedDisplay}
               </div>
             </div>
 
-            {/* Citizen 6-Row Professional Keypad */}
-            <div className="bg-[#15191D] p-3 rounded-2xl shadow-2xl border border-[#25252D] space-y-2.5">
-              {/* First utility row: CHECK | CORRECT / DELETE | CLEAR */}
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    feedback();
-                    if (stepsList.length > 0) {
-                      setCheckIndex(0);
-                      setIsCheckOpen(true);
-                    }
-                  }}
-                  className="h-12 rounded-xl bg-[#347BCB] hover:bg-[#2b69b0] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#1b4677] flex items-center justify-center gap-1.5 transition-all"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>CHECK</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCorrectDelete}
-                  className="h-12 rounded-xl bg-[#548DD7] hover:bg-[#427bc4] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#2b5791] flex items-center justify-center gap-1.5 transition-all"
-                >
-                  <Delete className="w-4 h-4" />
-                  <span>CORRECT / DEL</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleClearAll}
-                  className="h-12 rounded-xl bg-[#D83B29] hover:bg-[#c03221] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#801e13] flex items-center justify-center transition-all"
-                >
-                  CLEAR
-                </button>
-              </div>
-
-              {/* Second row: GT | √X | M+ | M- | MR */}
-              <div className="grid grid-cols-5 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    feedback();
-                    setDisplayValue(String(grandTotal));
-                    setExpression(`GT = ${grandTotal}`);
-                    setWaitingForOperand(true);
-                  }}
-                  className="h-12 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-[#C5F4D5] font-bold text-sm shadow-[0_3px_0_#0a0c0e] transition-all"
-                >
-                  GT
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSquareRoot}
-                  className="h-12 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-bold text-sm shadow-[0_3px_0_#0a0c0e] transition-all"
-                >
-                  √X
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    feedback();
-                    setMemoryValue((m) =>
-                      Number((m + parseCurrent()).toFixed(settings.decimalPlaces))
-                    );
-                    setWaitingForOperand(true);
-                  }}
-                  className="h-12 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-bold text-sm shadow-[0_3px_0_#0a0c0e] transition-all"
-                >
-                  M+
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    feedback();
-                    setMemoryValue((m) =>
-                      Number((m - parseCurrent()).toFixed(settings.decimalPlaces))
-                    );
-                    setWaitingForOperand(true);
-                  }}
-                  className="h-12 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-bold text-sm shadow-[0_3px_0_#0a0c0e] transition-all"
-                >
-                  M-
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    feedback();
-                    setDisplayValue(String(memoryValue));
-                    setExpression(`MR = ${memoryValue}`);
-                    setWaitingForOperand(true);
-                  }}
-                  className="h-12 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-[#548DD7] font-bold text-sm shadow-[0_3px_0_#0a0c0e] transition-all"
-                >
-                  MR
-                </button>
-              </div>
-
-              {/* Third row: 7 | 8 | 9 | ÷ | MU */}
-              <div className="grid grid-cols-5 gap-2">
-                {['7', '8', '9'].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => handleDigit(n)}
-                    className="h-14 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl shadow-[0_4px_0_#0a0c0e] transition-all"
-                  >
-                    {n}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => handleOperator('÷')}
-                  className={`h-14 rounded-xl font-mono font-bold text-2xl text-white shadow-[0_4px_0_#1b4677] active:translate-y-0.5 transition-all ${
-                    pendingOp === '÷' ? 'bg-[#548DD7]' : 'bg-[#347BCB] hover:bg-[#4389d8]'
-                  }`}
-                >
-                  ÷
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleOperator('MU')}
-                  className="h-14 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-bold text-sm shadow-[0_4px_0_#0a0c0e] transition-all"
-                >
-                  MU
-                </button>
-              </div>
-
-              {/* Fourth row: 4 | 5 | 6 | × | % */}
-              <div className="grid grid-cols-5 gap-2">
-                {['4', '5', '6'].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => handleDigit(n)}
-                    className="h-14 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl shadow-[0_4px_0_#0a0c0e] transition-all"
-                  >
-                    {n}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => handleOperator('×')}
-                  className={`h-14 rounded-xl font-mono font-bold text-2xl text-white shadow-[0_4px_0_#1b4677] active:translate-y-0.5 transition-all ${
-                    pendingOp === '×' ? 'bg-[#548DD7]' : 'bg-[#347BCB] hover:bg-[#4389d8]'
-                  }`}
-                >
-                  ×
-                </button>
-                <button
-                  type="button"
-                  onClick={handlePercent}
-                  className="h-14 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl shadow-[0_4px_0_#0a0c0e] transition-all"
-                >
-                  %
-                </button>
-              </div>
-
-              {/* Fifth row: 1 | 2 | 3 | − (with MC utility in 5th slot) */}
-              <div className="grid grid-cols-5 gap-2">
-                {['1', '2', '3'].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => handleDigit(n)}
-                    className="h-14 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl shadow-[0_4px_0_#0a0c0e] transition-all"
-                  >
-                    {n}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => handleOperator('−')}
-                  className={`h-14 rounded-xl font-mono font-bold text-2xl text-white shadow-[0_4px_0_#1b4677] active:translate-y-0.5 transition-all ${
-                    pendingOp === '−' ? 'bg-[#548DD7]' : 'bg-[#347BCB] hover:bg-[#4389d8]'
-                  }`}
-                >
-                  −
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    feedback();
-                    setMemoryValue(0);
-                  }}
-                  className="h-14 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-[#C5F4D5] font-bold text-xs shadow-[0_4px_0_#0a0c0e] transition-all"
-                >
-                  MC
-                </button>
-              </div>
-
-              {/* Sixth row: 0 | 00 | . | + | = */}
-              <div className="grid grid-cols-5 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleDigit('0')}
-                  className="h-14 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl shadow-[0_4px_0_#0a0c0e] transition-all"
-                >
-                  0
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDigit('00')}
-                  className="h-14 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl shadow-[0_4px_0_#0a0c0e] transition-all"
-                >
-                  00
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDecimal}
-                  className="h-14 rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-2xl shadow-[0_4px_0_#0a0c0e] transition-all"
-                >
-                  .
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleOperator('+')}
-                  className={`h-14 rounded-xl font-mono font-bold text-2xl text-white shadow-[0_4px_0_#1b4677] active:translate-y-0.5 transition-all ${
-                    pendingOp === '+' ? 'bg-[#548DD7]' : 'bg-[#347BCB] hover:bg-[#4389d8]'
-                  }`}
-                >
-                  +
-                </button>
-                <button
-                  type="button"
-                  onClick={handleEquals}
-                  className="h-14 rounded-xl bg-[#E3452E] hover:bg-[#cc3822] active:translate-y-0.5 text-white font-mono font-bold text-2xl shadow-[0_4px_0_#821f11] transition-all"
-                >
-                  =
-                </button>
-              </div>
+            <div className="flex items-center justify-between text-[11px] font-mono text-[#101010]/75 border-t border-[#101010]/15 pt-1">
+              <span className="truncate">
+                {settings.numberFormat === 'INDIA'
+                  ? numberToIndianWords(numericDisplay)
+                  : numberToWesternWords(numericDisplay)}
+              </span>
+              <span className="shrink-0 ml-2">
+                STEPS: {String(stepsList.length).padStart(2, '0')}
+              </span>
             </div>
           </div>
-        ) : (
-          /* LOAN EMI CALCULATOR SCREEN */
-          <div className="w-full max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-            {/* Loan EMI Input Card */}
+
+          {/* Citizen 6-Row Professional Keypad - Stretches edge-to-edge to fill remaining height with zero scroll */}
+          <div className="flex-1 flex flex-col gap-1.5 min-h-0">
+            {/* First utility row: CHECK | CORRECT / DELETE | CLEAR */}
+            <div className="flex-1 grid grid-cols-3 gap-1.5 min-h-0">
+              <button
+                type="button"
+                onClick={() => {
+                  feedback();
+                  if (stepsList.length > 0) {
+                    setCheckIndex(0);
+                    setIsCheckOpen(true);
+                  }
+                }}
+                className="h-full w-full rounded-xl bg-[#347BCB] hover:bg-[#2b69b0] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#1b4677] flex items-center justify-center gap-1.5 transition-all"
+              >
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>CHECK</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleCorrectDelete}
+                className="h-full w-full rounded-xl bg-[#548DD7] hover:bg-[#427bc4] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#2b5791] flex items-center justify-center gap-1.5 transition-all"
+              >
+                <Delete className="w-4 h-4 shrink-0" />
+                <span>CORRECT / DELETE</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleClearAll}
+                className="h-full w-full rounded-xl bg-[#D83B29] hover:bg-[#c03221] active:translate-y-0.5 text-white font-bold text-xs sm:text-sm shadow-[0_3px_0_#801e13] flex items-center justify-center transition-all"
+              >
+                CLEAR
+              </button>
+            </div>
+
+            {/* Second row: GT | √X | M+ | M- | MR */}
+            <div className="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
+              <button
+                type="button"
+                onClick={() => {
+                  feedback();
+                  setDisplayValue(String(grandTotal));
+                  setExpression(`GT = ${grandTotal}`);
+                  setWaitingForOperand(true);
+                }}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-[#C5F4D5] font-bold text-sm sm:text-base shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                GT
+              </button>
+              <button
+                type="button"
+                onClick={handleSquareRoot}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-bold text-sm sm:text-base shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                √X
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  feedback();
+                  setMemoryValue((m) =>
+                    Number((m + parseCurrent()).toFixed(settings.decimalPlaces))
+                  );
+                  setWaitingForOperand(true);
+                }}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-bold text-sm sm:text-base shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                M+
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  feedback();
+                  setMemoryValue((m) =>
+                    Number((m - parseCurrent()).toFixed(settings.decimalPlaces))
+                  );
+                  setWaitingForOperand(true);
+                }}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-bold text-sm sm:text-base shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                M-
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  feedback();
+                  setDisplayValue(String(memoryValue));
+                  setExpression(`MR = ${memoryValue}`);
+                  setWaitingForOperand(true);
+                }}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-[#548DD7] font-bold text-sm sm:text-base shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                MR
+              </button>
+            </div>
+
+            {/* Third row: 7 | 8 | 9 | ÷ | MU */}
+            <div className="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
+              {['7', '8', '9'].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => handleDigit(n)}
+                  className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl sm:text-2xl shadow-[0_3px_0_#0a0c0e] transition-all"
+                >
+                  {n}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => handleOperator('÷')}
+                className={`h-full w-full rounded-xl font-mono font-bold text-2xl sm:text-3xl text-white shadow-[0_3px_0_#1b4677] active:translate-y-0.5 transition-all ${
+                  pendingOp === '÷' ? 'bg-[#548DD7]' : 'bg-[#347BCB] hover:bg-[#4389d8]'
+                }`}
+              >
+                ÷
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOperator('MU')}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-bold text-sm sm:text-base shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                MU
+              </button>
+            </div>
+
+            {/* Fourth row: 4 | 5 | 6 | × | % */}
+            <div className="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
+              {['4', '5', '6'].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => handleDigit(n)}
+                  className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl sm:text-2xl shadow-[0_3px_0_#0a0c0e] transition-all"
+                >
+                  {n}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => handleOperator('×')}
+                className={`h-full w-full rounded-xl font-mono font-bold text-2xl sm:text-3xl text-white shadow-[0_3px_0_#1b4677] active:translate-y-0.5 transition-all ${
+                  pendingOp === '×' ? 'bg-[#548DD7]' : 'bg-[#347BCB] hover:bg-[#4389d8]'
+                }`}
+              >
+                ×
+              </button>
+              <button
+                type="button"
+                onClick={handlePercent}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl sm:text-2xl shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                %
+              </button>
+            </div>
+
+            {/* Fifth row: 1 | 2 | 3 | − | MC */}
+            <div className="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
+              {['1', '2', '3'].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => handleDigit(n)}
+                  className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl sm:text-2xl shadow-[0_3px_0_#0a0c0e] transition-all"
+                >
+                  {n}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => handleOperator('−')}
+                className={`h-full w-full rounded-xl font-mono font-bold text-2xl sm:text-3xl text-white shadow-[0_3px_0_#1b4677] active:translate-y-0.5 transition-all ${
+                  pendingOp === '−' ? 'bg-[#548DD7]' : 'bg-[#347BCB] hover:bg-[#4389d8]'
+                }`}
+              >
+                −
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  feedback();
+                  setMemoryValue(0);
+                }}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-[#C5F4D5] font-bold text-xs sm:text-sm shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                MC
+              </button>
+            </div>
+
+            {/* Sixth row: 0 | 00 | . | + | = */}
+            <div className="flex-1 grid grid-cols-5 gap-1.5 min-h-0">
+              <button
+                type="button"
+                onClick={() => handleDigit('0')}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl sm:text-2xl shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                0
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDigit('00')}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-xl sm:text-2xl shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                00
+              </button>
+              <button
+                type="button"
+                onClick={handleDecimal}
+                className="h-full w-full rounded-xl bg-[#25252D] hover:bg-[#32323d] active:translate-y-0.5 text-white font-mono font-bold text-2xl sm:text-3xl shadow-[0_3px_0_#0a0c0e] transition-all"
+              >
+                .
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOperator('+')}
+                className={`h-full w-full rounded-xl font-mono font-bold text-2xl sm:text-3xl text-white shadow-[0_3px_0_#1b4677] active:translate-y-0.5 transition-all ${
+                  pendingOp === '+' ? 'bg-[#548DD7]' : 'bg-[#347BCB] hover:bg-[#4389d8]'
+                }`}
+              >
+                +
+              </button>
+              <button
+                type="button"
+                onClick={handleEquals}
+                className="h-full w-full rounded-xl bg-[#E3452E] hover:bg-[#cc3822] active:translate-y-0.5 text-white font-mono font-bold text-2xl sm:text-3xl shadow-[0_3px_0_#821f11] transition-all"
+              >
+                =
+              </button>
+            </div>
+          </div>
+        </main>
+      ) : (
+        /* LOAN EMI CALCULATOR SCREEN */
+        <main className="flex-1 w-full bg-[#15191D] p-3 overflow-y-auto flex items-center justify-center">
+          <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
             <form
               onSubmit={handleCalculateEmi}
-              className="md:col-span-6 bg-white rounded-2xl p-5 shadow-lg border border-[#E9E9EC] space-y-4"
+              className="md:col-span-6 bg-white rounded-2xl p-4 shadow-lg border border-[#E9E9EC] space-y-3"
             >
-              <div className="border-b border-[#E9E9EC] pb-3">
+              <div className="border-b border-[#E9E9EC] pb-2">
                 <h3 className="font-bold text-base text-[#10232B]">
-                  Enter Loan Parameters
+                  Loan EMI Calculator
                 </h3>
                 <p className="text-xs text-neutral-500">
-                  Calculate Monthly EMI, Total Interest & Repayment Schedule
+                  Calculate Monthly EMI, Total Interest & Repayment
                 </p>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-neutral-700 mb-1.5">
+                <label className="block text-xs font-bold text-neutral-700 mb-1">
                   Loan Amount ({settings.currencySymbol})
                 </label>
                 <input
@@ -707,12 +697,12 @@ export default function CitizenCalculatorScreen({
                   required
                   value={loanAmount}
                   onChange={(e) => setLoanAmount(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono font-bold text-base text-[#101010] focus:outline-none focus:border-[#347BCB]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono font-bold text-base text-[#101010] focus:outline-none focus:border-[#347BCB]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-neutral-700 mb-1.5">
+                <label className="block text-xs font-bold text-neutral-700 mb-1">
                   Annual Interest Rate (% p.a.)
                 </label>
                 <input
@@ -723,12 +713,12 @@ export default function CitizenCalculatorScreen({
                   required
                   value={interestRate}
                   onChange={(e) => setInterestRate(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono font-bold text-base text-[#101010] focus:outline-none focus:border-[#347BCB]"
+                  className="w-full px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono font-bold text-base text-[#101010] focus:outline-none focus:border-[#347BCB]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-neutral-700 mb-1.5">
+                <label className="block text-xs font-bold text-neutral-700 mb-1">
                   Loan Tenure
                 </label>
                 <div className="flex items-center gap-2">
@@ -739,7 +729,7 @@ export default function CitizenCalculatorScreen({
                     required
                     value={loanTenure}
                     onChange={(e) => setLoanTenure(e.target.value)}
-                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono font-bold text-base text-[#101010] focus:outline-none focus:border-[#347BCB]"
+                    className="flex-1 px-3 py-2 rounded-xl bg-[#F2FFF7] border border-[#C5F4D5] font-mono font-bold text-base text-[#101010] focus:outline-none focus:border-[#347BCB]"
                   />
                   <div className="flex rounded-xl bg-neutral-100 p-1 border border-[#E9E9EC]">
                     <button
@@ -777,8 +767,8 @@ export default function CitizenCalculatorScreen({
             </form>
 
             {/* Professional Loan Repayment Summary Card */}
-            <div className="md:col-span-6 bg-white rounded-2xl p-5 shadow-lg border border-[#E9E9EC] space-y-4">
-              <div className="bg-[#A6B991] text-[#101010] rounded-xl p-4 border-2 border-[#8d9f78] shadow-inner">
+            <div className="md:col-span-6 bg-white rounded-2xl p-4 shadow-lg border border-[#E9E9EC] space-y-3">
+              <div className="bg-[#A6B991] text-[#101010] rounded-xl p-3.5 border-2 border-[#8d9f78] shadow-inner">
                 <div className="text-xs font-mono font-bold uppercase opacity-75">
                   Monthly Loan EMI ({emiCalculated.months} Months)
                 </div>
@@ -788,8 +778,8 @@ export default function CitizenCalculatorScreen({
                 </div>
               </div>
 
-              <div className="space-y-2.5 text-sm">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-[#F7F2FA]">
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#F7F2FA]">
                   <span className="text-neutral-600 font-medium">Principal Amount</span>
                   <span className="font-mono font-bold text-[#171717] tabular-nums">
                     {settings.currencySymbol}
@@ -797,7 +787,7 @@ export default function CitizenCalculatorScreen({
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 rounded-xl bg-[#F2FFF7]">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-[#F2FFF7]">
                   <span className="text-neutral-600 font-medium">Total Interest Payable</span>
                   <span className="font-mono font-bold text-[#D83B29] tabular-nums">
                     {settings.currencySymbol}
@@ -805,52 +795,18 @@ export default function CitizenCalculatorScreen({
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#10232B] text-white">
-                  <span className="font-bold">Total Payment (Principal + Int.)</span>
+                <div className="flex items-center justify-between p-3 rounded-xl bg-[#10232B] text-white">
+                  <span className="font-bold">Total Payment</span>
                   <span className="font-mono font-bold text-base text-[#C5F4D5] tabular-nums">
                     {settings.currencySymbol}
                     {formatNumber(emiCalculated.totalPayment, settings.numberFormat)}
                   </span>
                 </div>
               </div>
-
-              {/* Principal vs Interest Ratio Bar */}
-              {emiCalculated.totalPayment > 0 && (
-                <div className="pt-2">
-                  <div className="flex justify-between text-xs font-semibold text-neutral-600 mb-1.5">
-                    <span>
-                      Principal (
-                      {Math.round(
-                        (emiCalculated.principal / emiCalculated.totalPayment) * 100
-                      )}
-                      %)
-                    </span>
-                    <span>
-                      Interest (
-                      {Math.round(
-                        (emiCalculated.totalInterest / emiCalculated.totalPayment) * 100
-                      )}
-                      %)
-                    </span>
-                  </div>
-                  <div className="w-full h-3 rounded-full bg-neutral-200 overflow-hidden flex">
-                    <div
-                      style={{
-                        width: `${Math.min(
-                          100,
-                          (emiCalculated.principal / emiCalculated.totalPayment) * 100
-                        )}%`,
-                      }}
-                      className="bg-[#347BCB] h-full"
-                    />
-                    <div className="flex-1 bg-[#E3452E] h-full" />
-                  </div>
-                </div>
-              )}
             </div>
           </div>
-        )}
-      </main>
+        </main>
+      )}
 
       {/* CHECK Steps Modal */}
       {isCheckOpen && (

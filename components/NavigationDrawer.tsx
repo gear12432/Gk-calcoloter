@@ -32,6 +32,12 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   {
+    id: 'citizen',
+    label: 'Citizen Calculator',
+    subtitle: 'GT, MU, Memory & Loan EMI',
+    icon: Calculator,
+  },
+  {
     id: 'gst',
     label: 'GST Rates',
     subtitle: 'CGST, SGST, IGST & Slabs',
@@ -42,12 +48,6 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Currency Converter',
     subtitle: 'Live Global Exchange Rates',
     icon: Globe,
-  },
-  {
-    id: 'citizen',
-    label: 'Citizen Calculator',
-    subtitle: 'GT, MU, Memory & Loan EMI',
-    icon: Calculator,
   },
   {
     id: 'history',
