@@ -167,8 +167,8 @@
         screen: 'citizen',
         prevScreen: 'citizen',
         drawerOpen: false,
-        // Modern Circular Citizen Calculator State (matches uploaded screenshot)
-        citExpr: '692÷12',
+        // Modern Circular Citizen Calculator State (starts completely empty)
+        citExpr: '',
         citToolPanel: 'NONE', // 'NONE' | 'HISTORY' | 'RULER' | 'SCIENTIFIC'
         citRadMode: false,
         unitCategory: 'LENGTH',
@@ -183,29 +183,7 @@
           soundEnabled: true,
           decimalPlaces: 2
         },
-        history: [
-          {
-            id: 'sample-1',
-            timestamp: '2025-02-15T10:30:00.000Z',
-            type: 'CITIZEN',
-            expression: '692÷12',
-            originalAmount: 692,
-            finalAmount: 57.6666666667
-          },
-          {
-            id: 'sample-2',
-            timestamp: '2025-02-15T09:15:00.000Z',
-            type: 'GST',
-            expression: '10000 + 18% GST',
-            originalAmount: 10000,
-            gstRate: 18,
-            gstAmount: 1800,
-            cgstAmount: 900,
-            sgstAmount: 900,
-            igstAmount: 1800,
-            finalAmount: 11800
-          }
-        ],
+        history: [],
         displayValue: '0',
         expression: '0',
         pendingOp: null,
@@ -225,7 +203,7 @@
         dobMonth: '08',
         dobYear: '1998',
         cashFormat: 'INDIA',
-        cashQty: { 500: '10', 200: '5', 100: '10', 50: '', 20: '', 10: '', 5: '', 2: '', 1: '' },
+        cashQty: { 500: '', 200: '', 100: '', 50: '', 20: '', 10: '', 5: '', 2: '', 1: '' },
         toast: null
       };
 
@@ -261,7 +239,7 @@
 
       // Safe evaluation for the modern circular calculator
       function evaluateCalcExpression(rawExpr, radMode) {
-        if (!rawExpr || !rawExpr.trim()) return '';
+        if (!rawExpr || !rawExpr.trim() || /^[0-9.]+$/.test(rawExpr.trim())) return '';
         let cleaned = rawExpr.replace(/[÷×−+^(\.]$/, '');
         if (!cleaned) return '';
         const openCount = (cleaned.match(/\(/g) || []).length;
@@ -300,7 +278,7 @@
       }
 
       function renderColoredExpression(expr) {
-        if (!expr) return '<span class="text-[#333333]">0</span>';
+        if (!expr) return '';
         const tokens = expr.split(/([÷×−+%()])/g).filter(Boolean);
         return tokens.map(part => {
           const isOpOrParen = /^[÷×−+%()]$/.test(part);

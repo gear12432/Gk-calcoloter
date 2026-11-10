@@ -99,44 +99,7 @@ const HISTORY_STORAGE_KEY = 'all_in_one_calc_history_v1';
 const SETTINGS_STORAGE_KEY = 'all_in_one_calc_settings_v1';
 const CURRENCIES_STORAGE_KEY = 'all_in_one_calc_currencies_v1';
 
-export const INITIAL_SAMPLE_HISTORY: HistoryRecord[] = [
-  {
-    id: 'sample-1',
-    timestamp: '2025-02-15T10:30:00.000Z',
-    type: 'GST',
-    expression: '10000 + 18% GST',
-    originalAmount: 10000,
-    gstRate: 18,
-    gstMode: 'EXCLUSIVE',
-    gstAmount: 1800,
-    cgstAmount: 900,
-    sgstAmount: 900,
-    igstAmount: 1800,
-    finalAmount: 11800,
-  },
-  {
-    id: 'sample-2',
-    timestamp: '2025-02-15T09:15:00.000Z',
-    type: 'GST',
-    expression: '25000 + 15% GST',
-    originalAmount: 25000,
-    gstRate: 15,
-    gstMode: 'EXCLUSIVE',
-    gstAmount: 3750,
-    cgstAmount: 1875,
-    sgstAmount: 1875,
-    igstAmount: 3750,
-    finalAmount: 28750,
-  },
-  {
-    id: 'sample-3',
-    timestamp: '2025-02-15T08:00:00.000Z',
-    type: 'CITIZEN',
-    expression: '4500 × 12 + 1250',
-    originalAmount: 54000,
-    finalAmount: 55250,
-  },
-];
+export const INITIAL_SAMPLE_HISTORY: HistoryRecord[] = [];
 
 export function loadHistory(): HistoryRecord[] {
   if (typeof window === 'undefined') return INITIAL_SAMPLE_HISTORY;

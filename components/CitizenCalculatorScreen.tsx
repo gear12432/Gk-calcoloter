@@ -149,8 +149,8 @@ export default function CitizenCalculatorScreen({
   onOpenDrawer,
   onOpenHistory,
 }: CitizenCalculatorScreenProps) {
-  // Default expression matches the uploaded reference screenshot: 692÷12 -> 57.6666666667
-  const [expression, setExpression] = useState<string>('692÷12');
+  // Start with empty expression so no demo value is shown until the user types
+  const [expression, setExpression] = useState<string>('');
   const [showInlineHistory, setShowInlineHistory] = useState<boolean>(false);
   const [showUnitConverter, setShowUnitConverter] = useState<boolean>(false);
   const [showScientific, setShowScientific] = useState<boolean>(false);
@@ -164,10 +164,10 @@ export default function CitizenCalculatorScreen({
 
   const feedback = () => playKeyFeedback(settings.soundEnabled);
 
-  const livePreview = useMemo(
-    () => evaluateMathExpression(expression, isDegree),
-    [expression, isDegree]
-  );
+  const livePreview = useMemo(() => {
+    if (!expression || /^[0-9.]+$/.test(expression)) return '';
+    return evaluateMathExpression(expression, isDegree);
+  }, [expression, isDegree]);
 
   const isOperatorChar = (ch: string) =>
     ['+', '−', '×', '÷', '%', '^'].includes(ch);
