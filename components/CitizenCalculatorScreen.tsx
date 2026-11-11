@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Menu,
   Clock,
@@ -172,11 +172,41 @@ export default function CitizenCalculatorScreen({
   const isOperatorChar = (ch: string) =>
     ['+', '−', '×', '÷', '%', '^'].includes(ch);
 
+  const exprScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (exprScrollRef.current) {
+      exprScrollRef.current.scrollLeft = exprScrollRef.current.scrollWidth;
+    }
+  }, [expression]);
+
+  const getDynamicDisplaySize = (len: number) => {
+    if (len <= 8) return { text: 'text-5xl sm:text-6xl', cursor: 'h-12 sm:h-14' };
+    if (len === 9) return { text: 'text-[44px] sm:text-[54px]', cursor: 'h-11 sm:h-13' };
+    if (len === 10) return { text: 'text-[40px] sm:text-[50px]', cursor: 'h-10 sm:h-12' };
+    if (len === 11) return { text: 'text-[36px] sm:text-[46px]', cursor: 'h-9 sm:h-11' };
+    if (len === 12) return { text: 'text-[33px] sm:text-[42px]', cursor: 'h-8 sm:h-10' };
+    if (len === 13) return { text: 'text-[30px] sm:text-[39px]', cursor: 'h-8 sm:h-9' };
+    if (len === 14) return { text: 'text-[28px] sm:text-[36px]', cursor: 'h-7 sm:h-9' };
+    if (len === 15) return { text: 'text-[26px] sm:text-[34px]', cursor: 'h-7 sm:h-8' };
+    if (len === 16) return { text: 'text-[24px] sm:text-[32px]', cursor: 'h-6 sm:h-8' };
+    if (len === 17) return { text: 'text-[23px] sm:text-[30px]', cursor: 'h-6 sm:h-7' };
+    if (len === 18) return { text: 'text-[22px] sm:text-[28px]', cursor: 'h-6 sm:h-7' };
+    if (len === 19) return { text: 'text-[21px] sm:text-[26px]', cursor: 'h-5 sm:h-6' };
+    if (len === 20) return { text: 'text-[20px] sm:text-[25px]', cursor: 'h-5 sm:h-6' };
+    if (len <= 23) return { text: 'text-[18px] sm:text-[23px]', cursor: 'h-5 sm:h-6' };
+    if (len <= 27) return { text: 'text-[16px] sm:text-[20px]', cursor: 'h-4 sm:h-5' };
+    if (len <= 33) return { text: 'text-[14px] sm:text-[18px]', cursor: 'h-4 sm:h-5' };
+    return { text: 'text-[13px] sm:text-[16px]', cursor: 'h-3.5 sm:h-4' };
+  };
+
+  const displaySize = getDynamicDisplaySize(expression.length);
+
   const handleDigit = (digit: string) => {
     feedback();
     setExpression((prev) => {
       if (prev === '0') return digit;
-      if (prev.length >= 28) return prev;
+      if (prev.length >= 50) return prev;
       // If previous character is `)` or `%`, insert `×` automatically
       const last = prev.slice(-1);
       if (last === ')' || last === '%') return `${prev}×${digit}`;
@@ -370,20 +400,25 @@ export default function CitizenCalculatorScreen({
           </button>
         </div>
 
-        {/* Right-Aligned Expression Input with Green Vertical Cursor Bar (Larger Text) */}
-        <div className="my-auto flex items-center justify-end overflow-x-auto py-2">
-          <div className="flex items-center justify-end text-right text-5xl sm:text-6xl font-medium tracking-tight leading-tight break-all">
+        {/* Right-Aligned Single-Line Expression Input with Gradual Auto-Shrink & Green Cursor Bar */}
+        <div
+          ref={exprScrollRef}
+          className="my-auto w-full flex items-center justify-end overflow-x-auto overflow-y-hidden py-2 no-scrollbar"
+        >
+          <div
+            className={`inline-flex items-center justify-end text-right ${displaySize.text} font-medium tracking-tight leading-none whitespace-nowrap transition-all duration-150 ease-out`}
+          >
             {renderColoredExpression()}
             <span
-              className="inline-block w-[3px] h-12 sm:h-14 bg-[#3A8918] ml-1 animate-pulse shrink-0 rounded-full"
+              className={`inline-block w-[3px] ${displaySize.cursor} bg-[#3A8918] ml-1 animate-pulse shrink-0 rounded-full transition-all duration-150`}
               aria-hidden="true"
             />
           </div>
         </div>
 
-        {/* Live Preview Result Row (Larger Grey text right-aligned at bottom of display) */}
-        <div className="min-h-[44px] flex items-center justify-end text-right">
-          <span className="text-3xl sm:text-4xl font-medium text-[#758078] tabular-nums truncate">
+        {/* Live Preview Result Row (Single-Line right-aligned at bottom of display) */}
+        <div className="min-h-[44px] w-full flex items-center justify-end text-right overflow-hidden">
+          <span className="text-2xl sm:text-3xl font-medium text-[#758078] tabular-nums whitespace-nowrap truncate">
             {livePreview}
           </span>
         </div>

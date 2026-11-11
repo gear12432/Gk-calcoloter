@@ -410,7 +410,7 @@
         },
         // Modern Circular Citizen Calculator Handlers
         citDigit: function (d) {
-          state.citExpr = state.citExpr === '0' ? d : (state.citExpr.length >= 28 ? state.citExpr : state.citExpr + d);
+          state.citExpr = state.citExpr === '0' ? d : (state.citExpr.length >= 50 ? state.citExpr : state.citExpr + d);
           render();
         },
         citOp: function (op) {
@@ -793,11 +793,32 @@
         `;
       }
 
-      // Exact Modern White & Green Circular Button Citizen Calculator with Light Colored Buttons & Larger Text
+      function getCitDynamicSize(len) {
+        if (len <= 8) return { text: 'text-5xl sm:text-6xl', cursor: 'h-11 sm:h-14' };
+        if (len === 9) return { text: 'text-[44px] sm:text-[54px]', cursor: 'h-10 sm:h-13' };
+        if (len === 10) return { text: 'text-[40px] sm:text-[50px]', cursor: 'h-9 sm:h-12' };
+        if (len === 11) return { text: 'text-[36px] sm:text-[46px]', cursor: 'h-9 sm:h-11' };
+        if (len === 12) return { text: 'text-[33px] sm:text-[42px]', cursor: 'h-8 sm:h-10' };
+        if (len === 13) return { text: 'text-[30px] sm:text-[39px]', cursor: 'h-7 sm:h-9' };
+        if (len === 14) return { text: 'text-[28px] sm:text-[36px]', cursor: 'h-7 sm:h-9' };
+        if (len === 15) return { text: 'text-[26px] sm:text-[34px]', cursor: 'h-6 sm:h-8' };
+        if (len === 16) return { text: 'text-[24px] sm:text-[32px]', cursor: 'h-6 sm:h-8' };
+        if (len === 17) return { text: 'text-[23px] sm:text-[30px]', cursor: 'h-6 sm:h-7' };
+        if (len === 18) return { text: 'text-[22px] sm:text-[28px]', cursor: 'h-5 sm:h-7' };
+        if (len === 19) return { text: 'text-[21px] sm:text-[26px]', cursor: 'h-5 sm:h-6' };
+        if (len === 20) return { text: 'text-[20px] sm:text-[25px]', cursor: 'h-5 sm:h-6' };
+        if (len <= 23) return { text: 'text-[18px] sm:text-[23px]', cursor: 'h-4 sm:h-6' };
+        if (len <= 27) return { text: 'text-[16px] sm:text-[20px]', cursor: 'h-4 sm:h-5' };
+        if (len <= 33) return { text: 'text-[14px] sm:text-[18px]', cursor: 'h-3.5 sm:h-5' };
+        return { text: 'text-[13px] sm:text-[16px]', cursor: 'h-3.5 sm:h-4' };
+      }
+
+      // Exact Modern White & Green Circular Button Citizen Calculator with Light Colored Buttons & Single-Line Auto-Shrinking Text
       function renderCitizenScreen() {
         const livePreview = evaluateCalcExpression(state.citExpr, state.citRadMode);
         const unitList = UNIT_CATEGORIES[state.unitCategory].units;
         const convertedUnit = computeUnitValue();
+        const dynSize = getCitDynamicSize((state.citExpr || '').length);
 
         return `
           <div class="h-full flex-1 min-h-0 w-full bg-[#FFFFFF] text-[#1F2421] flex flex-col justify-between overflow-hidden select-none">
@@ -818,17 +839,17 @@
                 </div>
               </div>
 
-              <!-- Expression Display with Colored Operators & Vertical Green Cursor Bar (Larger Text) -->
-              <div class="w-full text-right overflow-x-auto my-auto py-1">
-                <div class="inline-flex items-center justify-end font-medium tracking-tight text-5xl sm:text-6xl leading-none break-all">
+              <!-- Single-Line Expression Display with Gradual Auto-Shrink & Vertical Green Cursor Bar -->
+              <div id="cit-expr-scroll" class="w-full text-right overflow-x-auto overflow-y-hidden my-auto py-1 flex items-center justify-end">
+                <div class="inline-flex items-center justify-end font-medium tracking-tight ${dynSize.text} leading-none whitespace-nowrap transition-all duration-150 ease-out">
                   ${renderColoredExpression(state.citExpr)}
-                  <span class="inline-block w-[3px] h-11 sm:h-14 bg-[#3A8918] ml-1 rounded-full cursor-bar"></span>
+                  <span class="inline-block w-[3px] ${dynSize.cursor} bg-[#3A8918] ml-1 rounded-full cursor-bar shrink-0 transition-all duration-150"></span>
                 </div>
               </div>
 
-              <!-- Live Preview Result in Grey (Larger Text) -->
-              <div class="w-full text-right min-h-[2.5rem] flex items-center justify-end">
-                <span class="text-3xl sm:text-4xl font-medium text-[#758078] tracking-tight truncate">${livePreview || ''}</span>
+              <!-- Live Preview Result in Grey (Single-Line) -->
+              <div class="w-full text-right min-h-[2.5rem] flex items-center justify-end overflow-hidden">
+                <span class="text-2xl sm:text-3xl font-medium text-[#758078] tracking-tight whitespace-nowrap truncate">${livePreview || ''}</span>
               </div>
             </div>
 
@@ -1392,6 +1413,8 @@
         else content = renderSettingsOrAbout();
 
         root.innerHTML = renderDrawer() + content + (state.toast ? `<div class="fixed bottom-4 right-4 z-50 bg-[#10232B] text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-xl">${state.toast}</div>` : '');
+        const exprScroll = document.getElementById('cit-expr-scroll');
+        if (exprScroll) exprScroll.scrollLeft = exprScroll.scrollWidth;
       }
 
       render();
